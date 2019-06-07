@@ -31,13 +31,13 @@
 namespace Steinberg
 {
 
-GKickVstProcessor::GKickVstProcessor()
+GeonkickVstEffect::GeonkickVstEffect()
 {
         RK_LOG_INFO("called");
         setControllerClass(GKickVstControllerUID);
 }
 
-tresult PLUGIN_API GKickVstProcessor::initialize(FUnknown* context)
+tresult PLUGIN_API GeonkickVstEffect::initialize(FUnknown* context)
 {
         RK_LOG_INFO("called");
         auto res = AudioEffect::initialize(context);
@@ -49,7 +49,14 @@ tresult PLUGIN_API GKickVstProcessor::initialize(FUnknown* context)
         return kResultTrue;
 }
 
-tresult PLUGIN_API GKickVstProcessor::setBusArrangements(Vst::SpeakerArrangement* inputs,
+IPlugView* PLUGIN_API GVstController::createView(const char* name)
+{
+        if (name && std::string(name) == std::string("editor"))
+                return static_cast<IPlugView*>(new GKickVstEditor(this));
+        return nullptr;
+}
+
+tresult PLUGIN_API GeonkickVstEffect::setBusArrangements(Vst::SpeakerArrangement* inputs,
                                                          int32 numIns,
                                                          Vst::SpeakerArrangement* outputs,
                                                          int32 numOuts)
@@ -61,19 +68,19 @@ tresult PLUGIN_API GKickVstProcessor::setBusArrangements(Vst::SpeakerArrangement
         return kResultFalse;
 }
 
-tresult PLUGIN_API GKickVstProcessor::setupProcessing(Vst::ProcessSetup& setup)
+tresult PLUGIN_API GeonkickVstEffect::setupProcessing(Vst::ProcessSetup& setup)
 {
         RK_LOG_INFO("called");
         return AudioEffect::setupProcessing(setup);
 }
 
-tresult PLUGIN_API GKickVstProcessor::setActive(TBool state)
+tresult PLUGIN_API GeonkickVstEffect::setActive(TBool state)
 {
         RK_LOG_INFO("called");
         return AudioEffect::setActive(state);
 }
 
-tresult PLUGIN_API GKickVstProcessor::process(Vst::ProcessData& data)
+tresult PLUGIN_API GeonkickVstEffect::process(Vst::ProcessData& data)
 {
 	auto eventList = data.inputEvents;
 	if (eventList) {
@@ -122,7 +129,7 @@ tresult PLUGIN_API GKickVstProcessor::process(Vst::ProcessData& data)
         return kResultOk;
 }
 
-tresult PLUGIN_API GKickVstProcessor::setState(IBStream* state)
+tresult PLUGIN_API GeonkickVstEffect::setState(IBStream* state)
 {
         RK_LOG_INFO("called");
         if (!state)
@@ -130,16 +137,16 @@ tresult PLUGIN_API GKickVstProcessor::setState(IBStream* state)
         return kResultOk;
 }
 
-tresult PLUGIN_API GKickVstProcessor::getState(IBStream* state)
+tresult PLUGIN_API GeonkickVstEffect::getState(IBStream* state)
 {
         RK_LOG_INFO("called");
-		return kResultOk;
+        return kResultOk;
 }
 
-FUnknown* GKickVstProcessor::createInstance(void*)
+FUnknown* GeonkickVstEffect::createInstance(void*)
 {
         RK_LOG_INFO("called");
-        return static_cast<Vst::IAudioProcessor*>(new GKickVstProcessor());
+        return static_cast<Vst::IAudioProcessor*>(new GeonkickVstEffect());
 }
 
 } // namespace Steinberg

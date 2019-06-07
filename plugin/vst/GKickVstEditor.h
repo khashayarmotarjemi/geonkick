@@ -30,22 +30,20 @@
 
 using namespace Steinberg;
 
-class MainWindow;
 class RkMain;
 
 class GKickVstEditor : public Vst::EditorView {
  public:
-        GKickVstEditor(Vst::EditController *controller);
+        GKickVstEditor(GeonkickVstEffect *effect);
         ~GKickVstEditor();
 
         tresult PLUGIN_API isPlatformTypeSupported(Steinberg::FIDString type) final;
         tresult PLUGIN_API attached(void* parent, FIDString type) final;
         tresult PLUGIN_API removed() final;
-		tresult PLUGIN_API getSize(ViewRect* newSize) final;
+        tresult PLUGIN_API getSize(ViewRect* newSize) final;
 
  private:
         std::unique_ptr<RkMain> guiApp;
-		MainWindow *mainWindow;
 };
 
 #endif // GKICK_VST_EDITOR_H

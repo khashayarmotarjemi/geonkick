@@ -21,9 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "GKickVstController.h"
-#include "GKickVstProcessor.h"
 #include "VstIds.h"
+#include "GeonkickVstEffect.h"
 
 #include "public.sdk/source/main/pluginfactoryvst3.h"
 #include "pluginterfaces/base/fplatform.h"
@@ -31,19 +30,19 @@
 #define gkickPluginName		"Geonkick"
 #define gkickOriginalFilename	"Geonkick.vst3"
 #if SMTG_PLATFORM_64
-#define gkickFileDescription	gkickPluginName" Geonkick (64Bit)"
+#define gkickFileDescription	gkickPluginName" Geonkick (64bit)"
 #else
 #define gkickFileDescription	gkickPluginName" Geonkick"
 #endif
-#define gkickCompanyName		"Quamplex"
+#define gkickCompanyName	"Quamplex"
 #define gkickCompanyWeb		"http://quamplex.com"
-#define gkickCompanyEmail		"mailto:iurie.nistor@quamplex.com"
+#define gkickCompanyEmail	"mailto:iurie.nistor@quamplex.com"
 #define gkickLegalCopyright	"Copyright (C) 2019 Iurie Nistor"
-#define gkickLegalTrademarks	"Licence GPLv3"
+#define gkickLegalTrademarks	"License GPLv3"
 
 BEGIN_FACTORY_DEF(gkickCompanyName, gkickCompanyWeb, gkickCompanyEmail)
 
-DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstProcessorUID),
+DEF_CLASS2(INLINE_UID_FROM_FUID(GeonkickVstEffectUID),
            PClassInfo::kManyInstances,
            kVstAudioEffectClass,
            gkickPluginName,
@@ -51,17 +50,7 @@ DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstProcessorUID),
            "Fx",
            "2.0.0",
            kVstVersionString,
-           GKickVstProcessor::createInstance)
-
-DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstControllerUID),
-           PClassInfo::kManyInstances,
-           kVstComponentControllerClass,
-           gkickPluginName "Controller",
-           0,
-           "",
-           "2.0.0",
-           kVstVersionString,
-           GKickVstController::createInstance)
+           GeonkickVstEffect::createInstance)
 
 END_FACTORY
 

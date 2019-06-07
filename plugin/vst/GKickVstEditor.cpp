@@ -27,10 +27,9 @@
 #include <RkMain.h>
 #include <RkPlatform.h>
 
-GKickVstEditor::GKickVstEditor(Vst::EditController *controller)
-        : Vst::EditorView(controller)
+GKickVstEditor::GKickVstEditor(GeonkickVstEffect *effect)
+        : Vst::EditorView(effect)
         , guiApp{nullptr}
-        , mainWindow{nullptr}
 {
 }
 
@@ -48,7 +47,7 @@ tresult PLUGIN_API GKickVstEditor::attached(void* parent, FIDString type)
 {
         guiApp = std::make_unique<RkMain>();
         auto info = rk_from_native_win(nullptr, nullptr, reinterpret_cast<HWND>(parent));
-        mainWindow = new MainWindow(guiApp, /* get api */, info);
+        auto mainWindow = new MainWindow(guiApp.get(), geonkickApi, info);
         if (!mainWindow->init()) {
                 RK_LOG_ERROR("can't create gui");
                 guiApp.reset(nullptr);			
@@ -68,13 +67,14 @@ tresult PLUGIN_API GKickVstEditor::removed()
 
 tresult PLUGIN_API GKickVstEditor::getSize(ViewRect* newSize)
 {
-	if (newSize == nullptr || mainWindow == nullptr)
+	if (newSize == nullptr || guiApp == nullptr || guiApp->topWindow())
 		return kResultFalse;
 
-	newSize->left   = mainWindow->x();
-	newSize->right  = mainWindow->x() + mainWindow->width();
-	newSize->top    = mainWindow->y();
-	newSize->bottom = mainWindow->y() + mainWindow->height();
+        auto topWindow = guiApp->topWindow();
+	newSize->left   = topWindow->x();
+	newSize->right  = topWindow->x() + topWindow->width();
+	newSize->top    = topWindow->y();
+	newSize->bottom = topWindow->y() + topWindow->height();
 	return kResultOk;
 }
 
