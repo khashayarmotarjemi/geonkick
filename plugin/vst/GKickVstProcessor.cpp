@@ -44,9 +44,8 @@ tresult PLUGIN_API GKickVstProcessor::initialize(FUnknown* context)
         if (res != kResultTrue)
                 return kResultFalse;
 
-        addAudioInput(STR16("AudioInputXX"), Vst::SpeakerArr::kStereo);
-        addAudioOutput(STR16("AudioOutputXX"), Vst::SpeakerArr::kStereo);
-
+        addAudioOutput(STR16("Geonkick Out"), Vst::SpeakerArr::kStereo);
+        addEventInput(STR16 ("Geonkick In"), 1);
         return kResultTrue;
 }
 
@@ -55,8 +54,9 @@ tresult PLUGIN_API GKickVstProcessor::setBusArrangements(Vst::SpeakerArrangement
                                                          Vst::SpeakerArrangement* outputs,
                                                          int32 numOuts)
 {
-        RK_LOG_INFO("called");
-        if (numIns == 1 && numOuts == 1 && inputs[0] == outputs[0])
+        RK_LOG_INFO("numIns: " << numIns);
+        RK_LOG_INFO("numOuts: " << numOuts);
+        if (numIns == 0 && numOuts == 1)
                 return AudioEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
         return kResultFalse;
 }
@@ -75,6 +75,50 @@ tresult PLUGIN_API GKickVstProcessor::setActive(TBool state)
 
 tresult PLUGIN_API GKickVstProcessor::process(Vst::ProcessData& data)
 {
+	auto eventList = data.inputEvents;
+	if (eventList) {
+		auto nEvents = eventList->getEventCount();
+		for (decltype(nEvents) i = 0; i < nEvents; i++) {
+			Event event;
+			if (eventList->getEvent(i, event) == kResultOk) {
+				switch (event.type)
+                                        {
+                                        case Event::kNoteOnEvent:
+                                                RK_LOG_INFO("Note On Event");
+                                                break;
+                                        case Event::kNoteOffEvent:
+                                                RK_LOG_INFO("Note Off Event");
+                                                break;
+                                        default:
+                                                RK_LOG_INFO("Unknwon Event");
+                                        }
+			}
+		}
+	}
+
+        // To clarify if it is needed...
+        //	if (data.numInputs == 0 || data.numOutputs == 0)
+	//	return kResultOk;
+
+        auto numChannels = data.outputs[0].numChannels;
+        auto numSamples = data.numSamples;
+	auto outBuff = getChannelBuffersPointer(processSetup, data.outputs[0]);
+
+	// Is this needed here?...
+        //	data.outputs[0].silenceFlags = 0;
+
+	if (!bBypass) {
+                /*
+			if (data.symbolicSampleSize == kSample32)
+				fVuPPM = processAudio<Sample32> ((Sample32**)in, (Sample32**)out, numChannels,
+				                                 data.numSamples, gain);
+			else
+				fVuPPM = processAudio<Sample64> ((Sample64**)in, (Sample64**)out, numChannels,
+				                                 data.numSamples, gain);
+                */
+                // Write into out buffer... outBuff
+	}
+
         return kResultOk;
 }
 
