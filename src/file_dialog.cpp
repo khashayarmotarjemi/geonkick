@@ -407,7 +407,7 @@ void FileDialog::onPathChanged(const std::string &pathName)
 
 void FileDialog::onAccept()
 {
-        status = AcceptStatus::Accept;
+        /*status = AcceptStatus::Accept;
         if (dialogType == Type::Open && !filesView->selectedFile().empty()) {
                 pathSelected = filesView->selectedFile();
                 action selectedFile(pathSelected);
@@ -422,7 +422,7 @@ void FileDialog::onAccept()
                         action selectedFile(pathSelected);
                         close();
                 }
-        }
+        }*/
 }
 
 void FileDialog::onCancel()

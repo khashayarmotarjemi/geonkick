@@ -601,7 +601,7 @@ void GeonkickApi::setLimiterValue(double value)
 void GeonkickApi::kickUpdatedCallback(void *arg, gkick_real *buff, size_t size)
 {
         std::vector<gkick_real> buffer(size, 0);
-        std::memcpy(buffer.data(), buff, size * sizeof(gkick_real));
+        memcpy(buffer.data(), buff, size * sizeof(gkick_real));
         GeonkickApi *obj = static_cast<GeonkickApi*>(arg);
         if (obj)
                 obj->updateKickBuffer(std::move(buffer));

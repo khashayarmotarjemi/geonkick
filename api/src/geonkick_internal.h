@@ -29,8 +29,6 @@
 #include "gkick_audio.h"
 #include "gkick_buffer.h"
 
-#include <pthread.h>
-
 #define GEONKICK_SAMPLE_RATE 48000
 
 /* Kick maximum length in seconds. */

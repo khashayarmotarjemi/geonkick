@@ -30,7 +30,7 @@
 #include <RkLineEdit.h>
 #include <RkProgressBar.h>
 
-#include <sndfile.h>
+//#include <sndfile.h>
 
 extern const unsigned char rk_export_bk_png[];
 extern const unsigned char rk_export_format_unpressed_png[];
@@ -79,7 +79,7 @@ ExportWidget::ExportWidget(GeonkickWidget *parent, GeonkickApi *api)
         locationEdit->setFont(font());
         locationEdit->setTitle("locationEdit");
         locationEdit->show();
-        locationEdit->setText(geonkickApi->currentWorkingPath("ExportDialog/Location"));
+//        locationEdit->setText(geonkickApi->currentWorkingPath("ExportDialog/Location"));
         locationEdit->setSize(120, 25);
         locationEdit->setPosition(82, 54);
         RK_ACT_BIND(locationEdit, textEdited, RK_ACT_ARGS(const std::string& text), this, resetProgressBar());
@@ -242,7 +242,7 @@ void ExportWidget::browse()
         fileNameEdit->setFocus(false);
         auto fileDialog = new FileDialog(this, FileDialog::Type::Open,
                                          "Select Path - " + std::string(GEOKICK_APP_NAME));
-        fileDialog->setCurrentDirectoy(geonkickApi->currentWorkingPath("ExportDialog/Location"));
+        //fileDialog->setCurrentDirectoy(geonkickApi->currentWorkingPath("ExportDialog/Location"));
         RK_ACT_BIND(fileDialog, selectedFile,
                     RK_ACT_ARGS(const std::string &file), this,
                     setLocation(fileDialog->currentDirectory()));
@@ -251,7 +251,7 @@ void ExportWidget::browse()
 void ExportWidget::setLocation(const std::string &location)
 {
         locationEdit->setText(location);
-        geonkickApi->setCurrentWorkingPath("ExportDialog/Location", std::filesystem::path(location));
+        //geonkickApi->setCurrentWorkingPath("ExportDialog/Location", std::filesystem::path(location));
 }
 
 bool ExportWidget::validateInput()
@@ -271,7 +271,7 @@ bool ExportWidget::validateInput()
 
 void ExportWidget::exportKick()
 {
-        resetProgressBar();
+       /* resetProgressBar();
         if (!validateInput())
                 return;
 
@@ -333,6 +333,7 @@ void ExportWidget::exportKick()
 
         sf_close(sndFile);
         close();
+		*/
 }
 
 void ExportWidget::resetProgressBar()
@@ -342,7 +343,7 @@ void ExportWidget::resetProgressBar()
 
 int ExportWidget::exportFormat()
 {
-        switch (selectedFormat)
+     /*   switch (selectedFormat)
         {
         case ExportFormat::Flac16:
                 return SF_FORMAT_FLAC | SF_FORMAT_PCM_16;
@@ -358,12 +359,12 @@ int ExportWidget::exportFormat()
                 return SF_FORMAT_OGG | SF_FORMAT_VORBIS;
         default:
                 return SF_FORMAT_WAV | SF_FORMAT_PCM_24;
-        }
+        }*/
 }
 
 std::string ExportWidget::getFilePath()
 {
-        return std::filesystem::path(locationEdit->text()) / std::filesystem::path(fileNameEdit->text() + "." + fileSuffix());
+//        return std::filesystem::path(locationEdit->text()) / std::filesystem::path(fileNameEdit->text() + "." + fileSuffix());
 }
 
 std::string ExportWidget::fileSuffix()

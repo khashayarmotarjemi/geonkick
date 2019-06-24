@@ -26,9 +26,9 @@
 
 #include "geonkick_api.h"
 
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
+//#include <rapidjson/document.h>
+//#include <rapidjson/writer.h>
+//#include <rapidjson/stringbuffer.h>
 
 #include <unordered_map>
 
@@ -107,9 +107,9 @@ class GeonkickState
         void setCurrentLayer(GeonkickApi::Layer layer);
 
  protected:
-        void parseKickObject(const rapidjson::Value &kick);
-        void parseOscillatorObject(int index,  const rapidjson::Value &osc);
-        std::vector<RkRealPoint> parseEnvelopeArray(const rapidjson::Value &envelopeArray);
+      //  void parseKickObject(const rapidjson::Value &kick);
+      //  void parseOscillatorObject(int index,  const rapidjson::Value &osc);
+      //  std::vector<RkRealPoint> parseEnvelopeArray(const rapidjson::Value &envelopeArray);
         void oscJson(std::ostringstream &jsonStream) const;
         void kickJson(std::ostringstream &jsonStream) const;
 

@@ -12,7 +12,7 @@ OBJECTS = gkick_log.o \
           distortion.o \
           oscillator.o \
           synthesizer.o \
-          gkick_jack.o \
+#          gkick_jack.o \
           audio_output.o \
           gkick_audio.o \
           geonkick.o

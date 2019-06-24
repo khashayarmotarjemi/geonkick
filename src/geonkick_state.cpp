@@ -43,7 +43,7 @@ GeonkickState::GeonkickState() :
 
 void GeonkickState::loadData(const std::string &data)
 {
-        rapidjson::Document document;
+        /*rapidjson::Document document;
         document.Parse(data.c_str());
         if (document.IsObject()) {
                 for (const auto &m: document.GetObject()) {
@@ -60,7 +60,7 @@ void GeonkickState::loadData(const std::string &data)
                         }
                 }
         }
-
+*/
 }
 
 void GeonkickState::initOscillators()
@@ -78,7 +78,7 @@ void GeonkickState::initOscillators()
         }
 }
 
-void GeonkickState::parseKickObject(const rapidjson::Value &kick)
+/*void GeonkickState::parseKickObject(const rapidjson::Value &kick)
 {
         if (kick.IsNull() || !kick.IsObject())
                 return;
@@ -220,7 +220,7 @@ std::vector<RkRealPoint> GeonkickState::parseEnvelopeArray(const rapidjson::Valu
 
         return points;
 }
-
+*/
 void GeonkickState::setLimiterValue(double val)
 {
         limiterValue = val;

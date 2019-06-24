@@ -2,6 +2,11 @@ cmake_minimum_required (VERSION 3.7)
 
 project(geonkick VERSION 1.6.0)
 
+# Temporary, to remove
+set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_VERSION 1)
+set(CMAKE_BUILD_TYPE Debug)
+
 option(GKICK_STANDALONE "Enable build for standalone" ON)
 option(GKICK_PLUGIN "Enable build for plugin" OFF)
 
@@ -10,7 +15,7 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type Release" FORCE)
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS} -fvisibility=hidden")
 
@@ -111,7 +116,7 @@ endif()
 
 if (ENABLE_LOGGING)
   message(STATUS "set debug level")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DRK_LOG_DEBUG_LEVEL")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I/c/msys64/mingw64/x86_64-w64-mingw32/include -DRK_LOG_DEBUG_LEVEL")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRK_LOG_DEBUG_LEVEL")
   list(APPEND GKICK_API_FLAGS "-DGKICK_LIB_LOG_LEVEL_DEBUG")
   list(APPEND GKICK_API_FLAGS "-DGKICK_LIB_LOG_FUNCTION")
@@ -156,16 +161,16 @@ else ()
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DRK_OS_GNU")
 endif ()
 
-#include_directories(${GKICK_API_DIR}/src)
+include_directories(${GKICK_API_DIR}/src)
 
 # Define custom target to build the geonkick api for standalone.
-#if (GKICK_STANDALONE)
-#  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/api/libgeonkick.a
-#    COMMAND mkdir -p api
-#    && cd ${GKICK_API_DIR}
-#    && $(MAKE) DEFINES="${GKICK_API_FLAGS}" BUILD="${CMAKE_BINARY_DIR}/api" TARGET="libgeonkick.a")
-#  add_custom_target(api_standalone DEPENDS ${CMAKE_BINARY_DIR}/api/libgeonkick.a)
-#endif(GKICK_STANDALONE)
+if (GKICK_STANDALONE)
+  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/api/libgeonkick.a
+    COMMAND mkdir -p api
+    && cd ${GKICK_API_DIR}
+    && $(MAKE) DEFINES="${GKICK_API_FLAGS}" BUILD="${CMAKE_BINARY_DIR}/api" TARGET="libgeonkick.a")
+  add_custom_target(api_standalone DEPENDS ${CMAKE_BINARY_DIR}/api/libgeonkick.a)
+endif(GKICK_STANDALONE)
 
 #if (GKICK_PLUGIN)
 #  if(CMAKE_SYSTEM_NAME MATCHES Windows)
@@ -179,15 +184,15 @@ endif ()
 #  endif()
 #endif(GKICK_PLUGIN)
 
-add_subdirectory(api)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (CMAKE_SYSTEM_NAME MATCHES Windows)
     include_directories(${GKICK_VST_SDK_PATH})
-    include_directories(${GKICK_REDKITE_SDK_PATH}/include)
     link_directories(${GKICK_VST_SDK_PATH}/build/lib/Debug)
+	include_directories(${GKICK_REDKITE_SDK_PATH}/include)
     link_directories(${GKICK_REDKITE_SDK_PATH}/lib)
+	include_directories(/usr/local/include)
+	link_directories(/usr/local/lib)
 else ()
   add_definitions(-fPIC)
   include_directories(/usr/local/include/redkite)

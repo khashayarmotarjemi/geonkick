@@ -30,7 +30,6 @@ extern "C" {
 
 #include <stdio.h>
 #include <errno.h>
-//#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
@@ -38,6 +37,8 @@ extern "C" {
 #include <inttypes.h>
 #include <float.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <pthread.h>
 
 #include "gkick_log.h"
 

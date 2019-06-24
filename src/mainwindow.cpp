@@ -36,9 +36,9 @@
 
 #include <RkPlatform.h>
 
-#include <X11/keysym.h>
-#include <X11/keysymdef.h>
-#include <X11/XKBlib.h>
+//#include <X11/keysym.h>
+//#include <X11/keysymdef.h>
+//#include <X11/XKBlib.h>
 
 #include <RkEvent.h>
 
@@ -122,7 +122,7 @@ bool MainWindow::init(void)
 
         // TODO: Key shortcut feature will be implemented in the next version of Redkite.
         auto info = nativeWindowInfo();
-        XGrabKey(info->display, XKeysymToKeycode(info->display, XK_o), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
+/*        XGrabKey(info->display, XKeysymToKeycode(info->display, XK_o), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_O), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_h), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_H), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
@@ -136,7 +136,7 @@ bool MainWindow::init(void)
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_R), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_s), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_S), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
-        XFlush(info->display);
+        XFlush(info->display);*/
 
         if (geonkickApi->isStandalone() && !presetName.empty())
                 openPreset(presetName);
@@ -151,7 +151,7 @@ void MainWindow::openExportDialog()
 
 void MainWindow::savePreset(const std::string &fileName)
 {
-        if (fileName.size() < 6) {
+      /*  if (fileName.size() < 6) {
                 RK_LOG_ERROR("Save Preset: " << "Can't save preset. File name empty or wrong format. Format example: 'mykick.gkick'");
                 return;
         }
@@ -172,12 +172,12 @@ void MainWindow::savePreset(const std::string &fileName)
         file << geonkickApi->getState()->toJson();
         file.close();
         topBar->setPresetName(filePath.stem());
-        geonkickApi->setCurrentWorkingPath("SavePreset", filePath.has_parent_path() ? filePath.parent_path() : filePath);
+        geonkickApi->setCurrentWorkingPath("SavePreset", filePath.has_parent_path() ? filePath.parent_path() : filePath);*/
 }
 
 void MainWindow::openPreset(const std::string &fileName)
 {
-        if (fileName.size() < 6) {
+        /*if (fileName.size() < 6) {
                 RK_LOG_ERROR("Open Preset: " << "Can't save preset. File name empty or wrong format. Format example: 'mykick.gkick'");
                 return;
         }
@@ -204,19 +204,19 @@ void MainWindow::openPreset(const std::string &fileName)
         topBar->setPresetName(filePath.stem());
         file.close();
         geonkickApi->setCurrentWorkingPath("OpenPreset", filePath.has_parent_path() ? filePath.parent_path() : filePath);
-        updateGui();
+        updateGui();*/
 }
 
 void MainWindow::openFileDialog(FileDialog::Type type)
 {
-        auto fileDialog = new FileDialog(this, type, type == FileDialog::Type::Open ? "Open Preset" : "Save Preset");
+        /*auto fileDialog = new FileDialog(this, type, type == FileDialog::Type::Open ? "Open Preset" : "Save Preset");
         if (type == FileDialog::Type::Open) {
                 fileDialog->setCurrentDirectoy(geonkickApi->currentWorkingPath("OpenPreset"));
                 RK_ACT_BIND(fileDialog, selectedFile, RK_ACT_ARGS(const std::string &file), this, openPreset(file));
         } else {
                 fileDialog->setCurrentDirectoy(geonkickApi->currentWorkingPath("SavePreset"));
                 RK_ACT_BIND(fileDialog, selectedFile, RK_ACT_ARGS(const std::string &file), this, savePreset(file));
-        }
+        }*/
 }
 
 void MainWindow::openAboutDialog()
