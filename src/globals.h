@@ -30,12 +30,7 @@
 #include <vector>
 #include <atomic>
 #include <unordered_map>
-//#if defined(GCC_VERSION) && GCC_VERSION >= 800000
 #include <filesystem>
-//#else
-//#include <experimental/filesystem>
-//#define filesystem experimental::filesystem
-//#endif // GCC_VERSION >= 800000
 #include <fstream>
 #include <algorithm>
 #include <mutex>
@@ -45,8 +40,8 @@
 #include <RkLog.h>
 
 #define GEOKICK_APP_NAME "Geonkick"
-#define GEOKICK_APP_VERION 0x010600
-#define GEOKICK_APP_VERION_STRING "1.6.0"
+#define GEOKICK_APP_VERION 0x010800
+#define GEOKICK_APP_VERION_STRING "1.8.0"
 
 #ifdef GKICK_LIB_LOG_LEVEL_DEBUG
 #define GEONKICK_LOG_INFO(msg) std::cout << __PRETTY_FUNCTION__ << "[INFO] " << msg << std::endl;

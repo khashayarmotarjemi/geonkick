@@ -36,9 +36,12 @@
 
 #include <RkPlatform.h>
 
-//#include <X11/keysym.h>
-//#include <X11/keysymdef.h>
-//#include <X11/XKBlib.h>
+#ifdef GEONKICK_WINDOWS
+#else
+#include <X11/keysym.h>
+#include <X11/keysymdef.h>
+#include <X11/XKBlib.h>
+#endif
 
 #include <RkEvent.h>
 
@@ -122,7 +125,9 @@ bool MainWindow::init(void)
 
         // TODO: Key shortcut feature will be implemented in the next version of Redkite.
         auto info = nativeWindowInfo();
-/*        XGrabKey(info->display, XKeysymToKeycode(info->display, XK_o), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
+#ifdef GEONKICK_WINDOWS
+#else
+        XGrabKey(info->display, XKeysymToKeycode(info->display, XK_o), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_O), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_h), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_H), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
@@ -136,7 +141,8 @@ bool MainWindow::init(void)
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_R), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_s), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_S), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
-        XFlush(info->display);*/
+        XFlush(info->display);
+#endif
 
         if (geonkickApi->isStandalone() && !presetName.empty())
                 openPreset(presetName);
