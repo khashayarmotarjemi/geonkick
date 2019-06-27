@@ -40,12 +40,14 @@ EnvelopeWidgetDrawingArea::EnvelopeWidgetDrawingArea(GeonkickWidget *parent, Geo
         int padding = 50;
         drawingArea = RkRect(1.1 * padding, padding / 2, width() - 1.5 * padding, height() - 1.2 * padding);
         setBackgroundColor(40, 40, 40);
-
+GEONKICK_LOG_INFO("HERE-1");
         kickGraphics = std::make_unique<KickGraph>(geonkickApi, drawingArea.size(), eventQueue());
+GEONKICK_LOG_INFO("HERE-2");
         RK_ACT_BIND(kickGraphics.get(),
                     graphUpdated,
                     RK_ACT_ARGS(std::shared_ptr<RkImage> graphImage),
                     this, updateKickGraph(graphImage));
+GEONKICK_LOG_INFO("HERE-2");
 }
 
 EnvelopeWidgetDrawingArea::~EnvelopeWidgetDrawingArea()
@@ -96,6 +98,9 @@ void EnvelopeWidgetDrawingArea::paintWidget(const std::shared_ptr<RkPaintEvent> 
 
 std::string EnvelopeWidgetDrawingArea::getEnvStateText() const
 {
+        if(!currentEnvelope)
+		        return std::string();
+	
         std::string str = "L" + std::to_string(static_cast<int>(geonkickApi->layer()) + 1) + " / ";
         if (currentEnvelope->category() == Envelope::Category::Oscillator1)
                 str += "OSC1";

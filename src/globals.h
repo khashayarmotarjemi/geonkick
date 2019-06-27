@@ -44,11 +44,11 @@
 #define GEOKICK_APP_VERION_STRING "1.8.0"
 
 #ifdef GKICK_LIB_LOG_LEVEL_DEBUG
-#define GEONKICK_LOG_INFO(msg) std::cout << __PRETTY_FUNCTION__ << "[INFO] " << msg << std::endl;
-#define GEONKICK_LOG_ERROR(msg) std::cout << __PRETTY_FUNCTION__ << "[ERROR] " << msg << std::endl;
-#define GEONKICK_LOG_DEBUG(msg) std::cout << __PRETTY_FUNCTION__ << "[DEBUG] " << msg << std::endl;
+#define GEONKICK_LOG_INFO(msg) RK_LOG_INFO(msg)
+#define GEONKICK_LOG_ERROR(msg) RK_LOG_ERROR(msg)
+#define GEONKICK_LOG_DEBUG(msg) RK_LOG_DEBUG(msg)
 #else
-#define GEONKICK_LOG_INFO(msg) std::cout << "[INFO] " << msg << std::endl;
-#define GEONKICK_LOG_ERROR(msg) std::cout << "[ERROR] " << msg << std::endl;
+#define GEONKICK_LOG_INFO(msg) RK_LOG_INFO(msg)
+#define GEONKICK_LOG_ERROR(msg) RK_LOG_INFO(msg)
 #endif //  // GKICK_LIB_LOG_LEVEL_DEBUG
 #endif // GEONKICK_GLOBALS_H

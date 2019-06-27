@@ -37,12 +37,14 @@ int main(int argc, char *argv[])
         auto api = new GeonkickApi;
         api->setEventQueue(app.eventQueue().get());
         api->setStandalone(true);
+
         if (!api->init()) {
                 GEONKICK_LOG_ERROR("can't init API");
                 exit(1);
         }
 
         auto window = new MainWindow(&app, api, preset);
+
         if (!window->init()) {
                 GEONKICK_LOG_ERROR("can't init main window");
                 exit(1);

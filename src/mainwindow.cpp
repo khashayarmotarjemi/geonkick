@@ -95,7 +95,7 @@ bool MainWindow::init(void)
                 GEONKICK_LOG_INFO("Jack is not installed or not running. "
                                   << "There is a need for jack server running "
                                   << "in order to have audio output.");
-
+GEONKICK_LOG_INFO("HERE-0");
         topBar = new TopBar(this, geonkickApi);
         topBar->setX(10);
         topBar->show();
@@ -105,24 +105,26 @@ bool MainWindow::init(void)
         RK_ACT_BIND(topBar, openAbout, RK_ACT_ARGS(), this, openAboutDialog());
         RK_ACT_BIND(topBar, openExport, RK_ACT_ARGS(), this, openExportDialog());
         RK_ACT_BIND(topBar, layerSelected, RK_ACT_ARGS(GeonkickApi::Layer layer, bool b), geonkickApi, enbaleLayer(layer, b));
-
+GEONKICK_LOG_INFO("HERE-1");
         // Create envelope widget.
         envelopeWidget = new EnvelopeWidget(this, geonkickApi, oscillators);
         envelopeWidget->setX(10);
         envelopeWidget->setY(topBar->y() + topBar->height());
         envelopeWidget->setFixedSize(850, 340);
         envelopeWidget->show();
+GEONKICK_LOG_INFO("HERE-1.1");
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), envelopeWidget, updateGui());
         RK_ACT_BIND(envelopeWidget, requestUpdateGui, RK_ACT_ARGS(), this, updateGui());
         auto limiterWidget = new Limiter(geonkickApi, this);
         limiterWidget->setPosition(envelopeWidget->x() + envelopeWidget->width() + 8, envelopeWidget->y());
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), limiterWidget, onUpdateLimiter());
         limiterWidget->show();
+GEONKICK_LOG_INFO("HERE-1.2");		
         controlAreaWidget = new ControlArea(this, geonkickApi, oscillators);
         controlAreaWidget->setPosition(10, envelopeWidget->y() + envelopeWidget->height() + 3);
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), controlAreaWidget, updateGui());
         controlAreaWidget->show();
-
+GEONKICK_LOG_INFO("HERE-2");
         // TODO: Key shortcut feature will be implemented in the next version of Redkite.
         auto info = nativeWindowInfo();
 #ifdef GEONKICK_WINDOWS

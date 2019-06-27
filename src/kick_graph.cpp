@@ -47,7 +47,7 @@ KickGraph::~KickGraph()
 
 void KickGraph::start()
 {
-       graphThread = std::make_unique<std::thread>(&KickGraph::drawKickGraph, this);
+       //graphThread = std::make_unique<std::thread>(&KickGraph::drawKickGraph, this);
 }
 
 void KickGraph::updateGraphBuffer()

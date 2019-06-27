@@ -65,10 +65,11 @@ EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent,
           , layer3Button{nullptr}
           , geonkickApi{api}
 {
+GEONKICK_LOG_INFO("HERE-0");
         // Create drawing area.
         drawArea = new EnvelopeWidgetDrawingArea(this, geonkickApi);
         drawArea->show();
-
+GEONKICK_LOG_INFO("HERE-1");
         auto rect = drawArea->getDrawingArea();
 
         // Oscillator1 envelope
@@ -76,7 +77,7 @@ EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent,
         auto envelope = std::dynamic_pointer_cast<Envelope>(std::make_shared<OscillatorEnvelope>(oscillator, rect));
         envelopes.insert({static_cast<int>(Envelope::Category::Oscillator1), envelope});
         envelope->setCategory(Envelope::Category::Oscillator1);
-
+GEONKICK_LOG_INFO("HERE-2");
         // Oscillator2 envelope
         oscillator = oscillators[static_cast<int>(Oscillator::Type::Oscillator2)].get();
         envelope = std::dynamic_pointer_cast<Envelope>(std::make_shared<OscillatorEnvelope>(oscillator, rect));
@@ -95,6 +96,7 @@ EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent,
         envelope->setCategory(Envelope::Category::General);
         createButtomMenu();
         showEnvelope(Envelope::Category::General);
+GEONKICK_LOG_INFO("HERE-3");
 }
 
 EnvelopeWidget::~EnvelopeWidget()
