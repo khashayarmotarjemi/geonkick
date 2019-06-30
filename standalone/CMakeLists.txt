@@ -8,12 +8,12 @@ add_executable(geonkick
 add_dependencies(geonkick api_standalone)
 target_link_libraries(geonkick geonkick_common api_standalone)
 
-if (CMAKE_SYSTEM_NAME MATCHES Windows)
-	target_link_libraries(geonkick "-mwindows -lredkite -ld3d11 -ld2d1 -lm")
-else()
-	target_link_libraries(geonkick "-lredkite -lX11 -ljack -lsndfile -lrt -lm -ldl -lpthread -lcairo")
-	target_link_libraries(geonkick "-lredkite -lrt -lm -ldl -lpthread")
-endif()
+#if (CMAKE_SYSTEM_NAME MATCHES Windows)
+	target_link_libraries(geonkick "-mwindows -s -static -lredkite -ld3d11 -ld2d1 -lm")
+#else()
+#	target_link_libraries(geonkick "-lredkite -lX11 -ljack -lsndfile -lrt -lm -ldl -lpthread -lcairo")
+#	target_link_libraries(geonkick "-lredkite -lrt -lm -ldl -lpthread")
+#endif()
 target_link_libraries(geonkick "-lstdc++fs")
 
 install(TARGETS geonkick DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

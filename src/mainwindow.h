@@ -27,6 +27,9 @@
 #include "geonkick_widget.h"
 #include "file_dialog.h"
 
+#include <RkPen.h>
+#include <RkPainter.h>
+
 class Oscillator;
 class GeonkickApi;
 class TopBar;
@@ -37,7 +40,7 @@ class RkKeyEvent;
 class MainWindow : public GeonkickWidget
 {
  public:
-        explicit MainWindow(RkMain* app, GeonkickApi *api, std::string preset = std::string());
+        explicit MainWindow(RkMain* app, GeonkickApi *api, const std::string &preset = std::string());
       explicit MainWindow(RkMain* app, GeonkickApi *api, const RkNativeWindowInfo &info);
       ~MainWindow();
       bool init(void);
@@ -54,7 +57,7 @@ class MainWindow : public GeonkickWidget
       void openPreset();
       void openAboutDialog();
       RK_DECL_ACT(updateGui, updateGui(), RK_ARG_TYPE(), RK_ARG_VAL());
-
+	  
  private:
       GeonkickApi *geonkickApi;
       std::vector<std::unique_ptr<Oscillator>> oscillators;

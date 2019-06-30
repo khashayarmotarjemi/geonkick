@@ -25,8 +25,8 @@
 
 #include <RkPainter.h>
 
-GeonkickWidget::GeonkickWidget(RkMain *app, const RkNativeWindowInfo &info, Rk::WindowFlags flags)
-        : RkWidget(app, info, flags)
+GeonkickWidget::GeonkickWidget(RkMain *app, Rk::WindowFlags flags)
+        : RkWidget(app, flags)
 {
         setBackgroundColor(68, 68, 70);
         setTextColor({210, 226, 226, 140});
@@ -35,8 +35,8 @@ GeonkickWidget::GeonkickWidget(RkMain *app, const RkNativeWindowInfo &info, Rk::
         setFont(f);
 }
 
-GeonkickWidget::GeonkickWidget(RkMain *app, Rk::WindowFlags flags)
-        : RkWidget(app, flags)
+GeonkickWidget::GeonkickWidget(RkMain *app, const RkNativeWindowInfo &info, Rk::WindowFlags flags)
+        : RkWidget(app, info, flags)
 {
         setBackgroundColor(68, 68, 70);
         setTextColor({210, 226, 226, 140});
@@ -66,8 +66,9 @@ void GeonkickWidget::paintEvent(const std::shared_ptr<RkPaintEvent> &event)
                 painter.fillRect(rect(), background());
                 painter.drawImage(backgroundImage, 0, 0);
         }
+	  
 
-        paintWidget(event);
+		paintWidget(event);
 }
 
 void GeonkickWidget::paintWidget(const std::shared_ptr<RkPaintEvent> &event)

@@ -45,7 +45,7 @@
 
 #include <RkEvent.h>
 
-MainWindow::MainWindow(RkMain *app, GeonkickApi *api, std::string preset)
+MainWindow::MainWindow(RkMain *app, GeonkickApi *api, const std::string &preset)
         : GeonkickWidget(app)
         , geonkickApi{api}
         , topBar{nullptr}
@@ -77,7 +77,7 @@ MainWindow::~MainWindow()
                 geonkickApi->registerCallbacks(false);
                 geonkickApi->setEventQueue(nullptr);
                 // Since for plugins the api is not destroyed there
-                // is a need to unbind from the GUI that is being detryied.
+                // is a need to unbind from the GUI that is being destroyed.
                 RK_ACT_UNBIND_ALL(geonkickApi, kickLengthUpdated);
                 RK_ACT_UNBIND_ALL(geonkickApi, kickAmplitudeUpdated);
                 RK_ACT_UNBIND_ALL(geonkickApi, kickUpdated);
@@ -90,43 +90,42 @@ MainWindow::~MainWindow()
 
 bool MainWindow::init(void)
 {
-        oscillators = geonkickApi->oscillators();
+        //oscillators = geonkickApi->oscillators();
         if (geonkickApi->isStandalone() && !geonkickApi->isJackEnabled())
                 GEONKICK_LOG_INFO("Jack is not installed or not running. "
                                   << "There is a need for jack server running "
                                   << "in order to have audio output.");
-GEONKICK_LOG_INFO("HERE-0");
         topBar = new TopBar(this, geonkickApi);
         topBar->setX(10);
         topBar->show();
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), topBar, updateGui());
-        RK_ACT_BIND(topBar, openFile, RK_ACT_ARGS(), this, openFileDialog(FileDialog::Type::Open));
-        RK_ACT_BIND(topBar, saveFile, RK_ACT_ARGS(), this, openFileDialog(FileDialog::Type::Save));
-        RK_ACT_BIND(topBar, openAbout, RK_ACT_ARGS(), this, openAboutDialog());
-        RK_ACT_BIND(topBar, openExport, RK_ACT_ARGS(), this, openExportDialog());
-        RK_ACT_BIND(topBar, layerSelected, RK_ACT_ARGS(GeonkickApi::Layer layer, bool b), geonkickApi, enbaleLayer(layer, b));
-GEONKICK_LOG_INFO("HERE-1");
+       // RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), topBar, updateGui());
+       // RK_ACT_BIND(topBar, openFile, RK_ACT_ARGS(), this, openFileDialog(FileDialog::Type::Open));
+       // RK_ACT_BIND(topBar, saveFile, RK_ACT_ARGS(), this, openFileDialog(FileDialog::Type::Save));
+       // RK_ACT_BIND(topBar, openAbout, RK_ACT_ARGS(), this, openAboutDialog());
+       // RK_ACT_BIND(topBar, openExport, RK_ACT_ARGS(), this, openExportDialog());
+       // RK_ACT_BIND(topBar, layerSelected, RK_ACT_ARGS(GeonkickApi::Layer layer, bool b), geonkickApi, enbaleLayer(layer, b));
+GEONKICK_LOG_INFO("HHHHH1");
         // Create envelope widget.
         envelopeWidget = new EnvelopeWidget(this, geonkickApi, oscillators);
+		GEONKICK_LOG_INFO("HHHHH2");
         envelopeWidget->setX(10);
         envelopeWidget->setY(topBar->y() + topBar->height());
         envelopeWidget->setFixedSize(850, 340);
         envelopeWidget->show();
-GEONKICK_LOG_INFO("HERE-1.1");
-        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), envelopeWidget, updateGui());
+		GEONKICK_LOG_INFO("HHHHH3");
+       /* RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), envelopeWidget, updateGui());
         RK_ACT_BIND(envelopeWidget, requestUpdateGui, RK_ACT_ARGS(), this, updateGui());
         auto limiterWidget = new Limiter(geonkickApi, this);
         limiterWidget->setPosition(envelopeWidget->x() + envelopeWidget->width() + 8, envelopeWidget->y());
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), limiterWidget, onUpdateLimiter());
         limiterWidget->show();
-GEONKICK_LOG_INFO("HERE-1.2");		
         controlAreaWidget = new ControlArea(this, geonkickApi, oscillators);
         controlAreaWidget->setPosition(10, envelopeWidget->y() + envelopeWidget->height() + 3);
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), controlAreaWidget, updateGui());
         controlAreaWidget->show();
-GEONKICK_LOG_INFO("HERE-2");
         // TODO: Key shortcut feature will be implemented in the next version of Redkite.
         auto info = nativeWindowInfo();
+		GEONKICK_LOG_INFO("HHHHH3");
 #ifdef GEONKICK_WINDOWS
 #else
         XGrabKey(info->display, XKeysymToKeycode(info->display, XK_o), ControlMask, info->window, False, GrabModeAsync, GrabModeAsync);
@@ -146,9 +145,9 @@ GEONKICK_LOG_INFO("HERE-2");
         XFlush(info->display);
 #endif
 
-        if (geonkickApi->isStandalone() && !presetName.empty())
-                openPreset(presetName);
-        updateGui();
+        //if (geonkickApi->isStandalone() && !presetName.empty())
+        //        openPreset(presetName);
+        //updateGui();*/
         return true;
 }
 
@@ -159,7 +158,7 @@ void MainWindow::openExportDialog()
 
 void MainWindow::savePreset(const std::string &fileName)
 {
-      /*  if (fileName.size() < 6) {
+       /* if (fileName.size() < 6) {
                 RK_LOG_ERROR("Save Preset: " << "Can't save preset. File name empty or wrong format. Format example: 'mykick.gkick'");
                 return;
         }
@@ -185,7 +184,7 @@ void MainWindow::savePreset(const std::string &fileName)
 
 void MainWindow::openPreset(const std::string &fileName)
 {
-        /*if (fileName.size() < 6) {
+       /* if (fileName.size() < 6) {
                 RK_LOG_ERROR("Open Preset: " << "Can't save preset. File name empty or wrong format. Format example: 'mykick.gkick'");
                 return;
         }
@@ -217,7 +216,7 @@ void MainWindow::openPreset(const std::string &fileName)
 
 void MainWindow::openFileDialog(FileDialog::Type type)
 {
-        /*auto fileDialog = new FileDialog(this, type, type == FileDialog::Type::Open ? "Open Preset" : "Save Preset");
+/*        auto fileDialog = new FileDialog(this, type, type == FileDialog::Type::Open ? "Open Preset" : "Save Preset");
         if (type == FileDialog::Type::Open) {
                 fileDialog->setCurrentDirectoy(geonkickApi->currentWorkingPath("OpenPreset"));
                 RK_ACT_BIND(fileDialog, selectedFile, RK_ACT_ARGS(const std::string &file), this, openPreset(file));

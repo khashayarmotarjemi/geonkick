@@ -40,14 +40,12 @@ EnvelopeWidgetDrawingArea::EnvelopeWidgetDrawingArea(GeonkickWidget *parent, Geo
         int padding = 50;
         drawingArea = RkRect(1.1 * padding, padding / 2, width() - 1.5 * padding, height() - 1.2 * padding);
         setBackgroundColor(40, 40, 40);
-GEONKICK_LOG_INFO("HERE-1");
-        kickGraphics = std::make_unique<KickGraph>(geonkickApi, drawingArea.size(), eventQueue());
-GEONKICK_LOG_INFO("HERE-2");
-        RK_ACT_BIND(kickGraphics.get(),
-                    graphUpdated,
-                    RK_ACT_ARGS(std::shared_ptr<RkImage> graphImage),
-                    this, updateKickGraph(graphImage));
-GEONKICK_LOG_INFO("HERE-2");
+       // kickGraphics = std::make_unique<KickGraph>(geonkickApi, drawingArea.size(), eventQueue());
+        //RK_ACT_BIND(kickGraphics.get(),
+                    //graphUpdated,
+                    //RK_ACT_ARGS(std::shared_ptr<RkImage> graphImage),
+                    //this, updateKickGraph(graphImage));
+GEONKICK_LOG_INFO("HERE1");
 }
 
 EnvelopeWidgetDrawingArea::~EnvelopeWidgetDrawingArea()
@@ -56,7 +54,7 @@ EnvelopeWidgetDrawingArea::~EnvelopeWidgetDrawingArea()
 
 void EnvelopeWidgetDrawingArea::setEnvelope(Envelope* envelope)
 {
-        if (envelope) {
+		if (envelope) {
                 currentEnvelope = envelope;
                 if (currentEnvelope)
                         update();
@@ -65,7 +63,7 @@ void EnvelopeWidgetDrawingArea::setEnvelope(Envelope* envelope)
 
 void EnvelopeWidgetDrawingArea::paintWidget(const std::shared_ptr<RkPaintEvent> &event)
 {
-        RK_UNUSED(event);
+        /*RK_UNUSED(event);
         if (width() != envelopeImage.width() || height() != envelopeImage.height()) {
                 RkImage im(size());
                 envelopeImage = im;
@@ -90,15 +88,14 @@ void EnvelopeWidgetDrawingArea::paintWidget(const std::shared_ptr<RkPaintEvent> 
         pen.setWidth(1);
         pen.setColor({20, 20, 20, 255});
         painter.setPen(pen);
-        painter.drawRect({0, 0, width() - 1, height() - 1});
-
-        RkPainter paint(this);
-        paint.drawImage(envelopeImage, 0, 0);
+        painter.drawRect({0, 0, width() - 1, height() - 1});*/
+        //RkPainter paint(this);
+        //paint.drawImage(envelopeImage, 0, 0);
 }
 
 std::string EnvelopeWidgetDrawingArea::getEnvStateText() const
 {
-        if(!currentEnvelope)
+        /*if(!currentEnvelope)
 		        return std::string();
 	
         std::string str = "L" + std::to_string(static_cast<int>(geonkickApi->layer()) + 1) + " / ";
@@ -117,9 +114,9 @@ std::string EnvelopeWidgetDrawingArea::getEnvStateText() const
         else if (currentEnvelope->type() == Envelope::Type::Frequency)
                 str += "FENV";
         else
-                str += "CFENV";
+                str += "CFENV";*/
 
-        return str;
+        return "XXX";//str;
 }
 
 void EnvelopeWidgetDrawingArea::mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event)

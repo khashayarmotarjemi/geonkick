@@ -52,7 +52,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         setFixedWidth(parent->width());
         setFixedHeight(40);
 
-        auto logo = new RkLabel(this);
+       /* auto logo = new RkLabel(this);
         RkImage image(120, 20, rk_logo_png);
         logo->setSize(image.width(), image.height());
         logo->setBackgroundColor(68, 68, 70);
@@ -104,7 +104,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
                                      (height() - presetNameLabel->height()) / 2);
         presetNameLabel->show();
         createLyersButtons();
-        updateGui();
+        updateGui();*/
 }
 
 TopBar::~TopBar()

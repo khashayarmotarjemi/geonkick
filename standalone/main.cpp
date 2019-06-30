@@ -44,11 +44,9 @@ int main(int argc, char *argv[])
         }
 
         auto window = new MainWindow(&app, api, preset);
-
         if (!window->init()) {
                 GEONKICK_LOG_ERROR("can't init main window");
                 exit(1);
         }
-
         return app.exec();
 }
