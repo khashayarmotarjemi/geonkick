@@ -52,14 +52,14 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         setFixedWidth(parent->width());
         setFixedHeight(40);
 
-       /* auto logo = new RkLabel(this);
+        auto logo = new RkLabel(this);
         RkImage image(120, 20, rk_logo_png);
         logo->setSize(image.width(), image.height());
         logo->setBackgroundColor(68, 68, 70);
         logo->setImage(image);
         logo->setY((height() - logo->height()) / 2);
         logo->show();
-
+/*
         openFileButton = new GeonkickButton(this);
         openFileButton->show();
         openFileButton->setSize(90, 30);
