@@ -59,7 +59,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         logo->setImage(image);
         logo->setY((height() - logo->height()) / 2);
         logo->show();
-/*
+
         openFileButton = new GeonkickButton(this);
         openFileButton->show();
         openFileButton->setSize(90, 30);
@@ -104,7 +104,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
                                      (height() - presetNameLabel->height()) / 2);
         presetNameLabel->show();
         createLyersButtons();
-        updateGui();*/
+        updateGui();
 }
 
 TopBar::~TopBar()
