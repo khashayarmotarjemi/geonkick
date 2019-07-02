@@ -45,7 +45,6 @@ EnvelopeWidgetDrawingArea::EnvelopeWidgetDrawingArea(GeonkickWidget *parent, Geo
                     //graphUpdated,
                     //RK_ACT_ARGS(std::shared_ptr<RkImage> graphImage),
                     //this, updateKickGraph(graphImage));
-GEONKICK_LOG_INFO("HERE1");
 }
 
 EnvelopeWidgetDrawingArea::~EnvelopeWidgetDrawingArea()
@@ -63,19 +62,19 @@ void EnvelopeWidgetDrawingArea::setEnvelope(Envelope* envelope)
 
 void EnvelopeWidgetDrawingArea::paintWidget(const std::shared_ptr<RkPaintEvent> &event)
 {
-        /*RK_UNUSED(event);
-        if (width() != envelopeImage.width() || height() != envelopeImage.height()) {
+        RK_UNUSED(event);
+        if (flickering() && (width() != envelopeImage.width() || height() != envelopeImage.height())) {
                 RkImage im(size());
                 envelopeImage = im;
         }
 
-        RkPainter painter(&envelopeImage);
-        painter.fillRect(rect(), background());
+        auto painter = flickering() ? std::make_unique<RkPainter>(&envelopeImage) : std::make_unique<RkPainter>(this);
+        painter->fillRect(rect(), background());
 
-        if (kickGraphImage && !kickGraphImage->isNull())
+        /*if (kickGraphImage && !kickGraphImage->isNull())
                 painter.drawImage(*kickGraphImage.get(), drawingArea.topLeft().x(), drawingArea.topLeft().y());
         else
-                kickGraphics->updateGraphBuffer();
+                kickGraphics->updateGraphBuffer();*/
 
         if (currentEnvelope)
                 currentEnvelope->draw(painter, Envelope::DrawLayer::Axies);
@@ -83,14 +82,16 @@ void EnvelopeWidgetDrawingArea::paintWidget(const std::shared_ptr<RkPaintEvent> 
         if (currentEnvelope && !isHideEnvelope())
                 currentEnvelope->draw(painter, Envelope::DrawLayer::Envelope);
 
-        painter.drawText(55, height() - 12, getEnvStateText());
-        auto pen = painter.pen();
+        painter->drawText(55, height() - 12, getEnvStateText());
+        auto pen = painter->pen();
         pen.setWidth(1);
         pen.setColor({20, 20, 20, 255});
-        painter.setPen(pen);
-        painter.drawRect({0, 0, width() - 1, height() - 1});*/
-        //RkPainter paint(this);
-        //paint.drawImage(envelopeImage, 0, 0);
+        painter->setPen(pen);
+        painter->drawRect({0, 0, width() - 1, height() - 1});
+		if (flickering()) {
+			RkPainter paint(this);
+			paint.drawImage(envelopeImage, 0, 0);
+		}
 }
 
 std::string EnvelopeWidgetDrawingArea::getEnvStateText() const

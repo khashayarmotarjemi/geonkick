@@ -56,7 +56,7 @@ class Envelope
         virtual double envelopeLengh(void) const { return 0;}
         virtual double envelopeAmplitude(void) const { return 0;}
         RkPoint getOrigin(void) const;
-        void draw(RkPainter &painter, DrawLayer layer);
+        void draw(const std::unique_ptr<RkPainter> &painter, DrawLayer layer);
         bool hasSelected() const;
         void selectPoint(const RkPoint &point);
         void unselectPoint(void);
@@ -86,14 +86,14 @@ class Envelope
         virtual void pointAddedEvent(double x, double y) = 0;
         virtual void pointUpdatedEvent(unsigned int index, double x, double y) = 0;
         virtual void pointRemovedEvent(unsigned int index)  = 0;
-        void drawAxies(RkPainter &painter);
-        void drawScale(RkPainter &painter);
-        void drawTimeScale(RkPainter &painter);
-        void drawValueScale(RkPainter &painter);
-        void drawPoints(RkPainter &painter);
-        void drawPoint(RkPainter &painter, const RkPoint &point);
-        void drawPointValue(RkPainter &painter, const RkPoint &point, double value);
-        void drawLines(RkPainter &painter);
+        void drawAxies(const std::unique_ptr<RkPainter> &painter);
+        void drawScale(const std::unique_ptr<RkPainter> &painter);
+        void drawTimeScale(const std::unique_ptr<RkPainter> &painter);
+        void drawValueScale(const std::unique_ptr<RkPainter> &painter);
+        void drawPoints(const std::unique_ptr<RkPainter> &painter);
+        void drawPoint(const std::unique_ptr<RkPainter> &painter, const RkPoint &point);
+        void drawPointValue(const std::unique_ptr<RkPainter> &painter, const RkPoint &point, double value);
+        void drawLines(const std::unique_ptr<RkPainter> &painter);
         RkRealPoint scaleDown(const RkPoint &point);
         RkPoint scaleUp(const RkRealPoint &point);
         bool hasPoint(const RkRealPoint &point, const RkPoint &p);

@@ -66,37 +66,30 @@ EnvelopeWidget::EnvelopeWidget(GeonkickWidget *parent,
           , geonkickApi{api}
 {
         // Create drawing area.
-       /* drawArea = new EnvelopeWidgetDrawingArea(this, geonkickApi);
-       // drawArea->show();
-GEONKICK_LOG_INFO("HERE1");
-       // auto rect = drawArea->getDrawingArea();
-GEONKICK_LOG_INFO("HERE2");
+        drawArea = new EnvelopeWidgetDrawingArea(this, geonkickApi);
+        drawArea->show();
+        auto rect = drawArea->getDrawingArea();
         // Oscillator1 envelope
-        /*auto oscillator = oscillators[static_cast<int>(Oscillator::Type::Oscillator1)].get();
+        auto oscillator = oscillators[static_cast<int>(Oscillator::Type::Oscillator1)].get();
         auto envelope = std::dynamic_pointer_cast<Envelope>(std::make_shared<OscillatorEnvelope>(oscillator, rect));
         envelopes.insert({static_cast<int>(Envelope::Category::Oscillator1), envelope});
         envelope->setCategory(Envelope::Category::Oscillator1);
-
         // Oscillator2 envelope
         oscillator = oscillators[static_cast<int>(Oscillator::Type::Oscillator2)].get();
         envelope = std::dynamic_pointer_cast<Envelope>(std::make_shared<OscillatorEnvelope>(oscillator, rect));
         envelopes.insert({static_cast<int>(Envelope::Category::Oscillator2), envelope});
         envelope->setCategory(Envelope::Category::Oscillator2);
-
         // Noise envelope
         oscillator = oscillators[static_cast<int>(Oscillator::Type::Noise)].get();
         envelope = std::dynamic_pointer_cast<Envelope>(std::make_shared<OscillatorEnvelope>(oscillator, rect));
         envelopes.insert({static_cast<int>(Envelope::Category::Noise), envelope});
         envelope->setCategory(Envelope::Category::Noise);
-
         // General nevelope
         envelope = std::dynamic_pointer_cast<Envelope>(std::make_shared<GeneralEnvelope>(geonkickApi, rect));
         envelopes.insert({static_cast<int>(Envelope::Category::General), envelope});
         envelope->setCategory(Envelope::Category::General);
-        //createButtomMenu();
-		GEONKICK_LOG_INFO("HERE3");
-        //showEnvelope(Envelope::Category::General);*/
-		GEONKICK_LOG_INFO("HERE4");
+        createButtomMenu();
+        showEnvelope(Envelope::Category::General);
 }
 
 EnvelopeWidget::~EnvelopeWidget()
@@ -105,7 +98,7 @@ EnvelopeWidget::~EnvelopeWidget()
 
 void EnvelopeWidget::createButtomMenu()
 {
-        /*auto buttomAreaWidget = new GeonkickWidget(this);
+        auto buttomAreaWidget = new GeonkickWidget(this);
         buttomAreaWidget->setPosition(drawArea->x(), drawArea->y() + drawArea->height());
         buttomAreaWidget->setFixedSize(drawArea->width(), 34);
         buttomAreaWidget->show();
@@ -178,7 +171,7 @@ void EnvelopeWidget::createButtomMenu()
         osccillator1EvelopesButton->setPosition(osccillator2EvelopesButton->x() - osccillator1EvelopesButton->width(),
                                                 (buttomAreaWidget->height() - osccillator1EvelopesButton->height()) / 2);
         osccillator1EvelopesButton->show();
-        createLayersButtons(buttomAreaWidget);*/
+        createLayersButtons(buttomAreaWidget);
 }
 
 void EnvelopeWidget::updateKickGraph(std::shared_ptr<RkImage> graphImage)

@@ -90,7 +90,7 @@ MainWindow::~MainWindow()
 
 bool MainWindow::init(void)
 {
-        //oscillators = geonkickApi->oscillators();
+        oscillators = geonkickApi->oscillators();
         if (geonkickApi->isStandalone() && !geonkickApi->isJackEnabled())
                 GEONKICK_LOG_INFO("Jack is not installed or not running. "
                                   << "There is a need for jack server running "
@@ -98,24 +98,22 @@ bool MainWindow::init(void)
         topBar = new TopBar(this, geonkickApi);
         topBar->setX(10);
         topBar->show();
-       // RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), topBar, updateGui());
-       // RK_ACT_BIND(topBar, openFile, RK_ACT_ARGS(), this, openFileDialog(FileDialog::Type::Open));
-       // RK_ACT_BIND(topBar, saveFile, RK_ACT_ARGS(), this, openFileDialog(FileDialog::Type::Save));
-       // RK_ACT_BIND(topBar, openAbout, RK_ACT_ARGS(), this, openAboutDialog());
-       // RK_ACT_BIND(topBar, openExport, RK_ACT_ARGS(), this, openExportDialog());
-       // RK_ACT_BIND(topBar, layerSelected, RK_ACT_ARGS(GeonkickApi::Layer layer, bool b), geonkickApi, enbaleLayer(layer, b));
-GEONKICK_LOG_INFO("HHHHH1");
+        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), topBar, updateGui());
+        RK_ACT_BIND(topBar, openFile, RK_ACT_ARGS(), this, openFileDialog(FileDialog::Type::Open));
+        RK_ACT_BIND(topBar, saveFile, RK_ACT_ARGS(), this, openFileDialog(FileDialog::Type::Save));
+        RK_ACT_BIND(topBar, openAbout, RK_ACT_ARGS(), this, openAboutDialog());
+        RK_ACT_BIND(topBar, openExport, RK_ACT_ARGS(), this, openExportDialog());
+        RK_ACT_BIND(topBar, layerSelected, RK_ACT_ARGS(GeonkickApi::Layer layer, bool b), geonkickApi, enbaleLayer(layer, b));
+
         // Create envelope widget.
         envelopeWidget = new EnvelopeWidget(this, geonkickApi, oscillators);
-		GEONKICK_LOG_INFO("HHHHH2");
         envelopeWidget->setX(10);
         envelopeWidget->setY(topBar->y() + topBar->height());
         envelopeWidget->setFixedSize(850, 340);
         envelopeWidget->show();
-		GEONKICK_LOG_INFO("HHHHH3");
-       /* RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), envelopeWidget, updateGui());
+        RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), envelopeWidget, updateGui());
         RK_ACT_BIND(envelopeWidget, requestUpdateGui, RK_ACT_ARGS(), this, updateGui());
-        auto limiterWidget = new Limiter(geonkickApi, this);
+        /*auto limiterWidget = new Limiter(geonkickApi, this);
         limiterWidget->setPosition(envelopeWidget->x() + envelopeWidget->width() + 8, envelopeWidget->y());
         RK_ACT_BIND(this, updateGui, RK_ACT_ARGS(), limiterWidget, onUpdateLimiter());
         limiterWidget->show();
