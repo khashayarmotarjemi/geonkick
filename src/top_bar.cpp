@@ -93,16 +93,10 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         aboutButton->setCheckable(true);
         RK_ACT_BIND(aboutButton, toggled, RK_ACT_ARGS(bool b), this, openAbout());
 
-        presetNameLabel = new RkLabel(this);
-        presetNameLabel->setBackgroundColor(background());
-        presetNameLabel->setTextColor({210, 226, 226, 140});
-        auto font = presetNameLabel->font();
-        font.setSize(12);
-        presetNameLabel->setFont(font);
-        presetNameLabel->setSize(250, 30);
-        presetNameLabel->setPosition(aboutButton->x() + aboutButton->width() + 5,
-                                     (height() - presetNameLabel->height()) / 2);
-        presetNameLabel->show();
+        presetNavigator = new PresetNavigator(this, api);
+        presetNavigator->setBackgroundColor(background());
+        presetNavigator->setTextColor({210, 226, 226, 140});
+
         createLyersButtons();
         updateGui();
 }

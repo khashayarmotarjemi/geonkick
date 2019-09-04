@@ -43,16 +43,26 @@ struct Preset {
         std::path filepath;
 };
 
+/**
+ * PresetBrowserModel class.
+ *
+ * Preset browser is based on the slightly modified MVC pattern.
+ * But in simple words PresetBrowserModel is the backend class
+ * that works with the data.
+ * PresetBrowserModel holds a state that can be changed
+ * by using setters.
+ */
 class PresetBrowserModel {
+ public:
         PresetBrowserModel(GeonkickApi *api);
         void setPresetsPath(const std::path &path);
         const std::string& getPresetsPath() const;
         void setPresetGroup(int index);
         const PresetGroup& presetGroup(int index) const;
-        const PresetGroup& presetSubGroup(int index) const;
         void setPresetSubGroup(int index);
-        const Preset& preset(int index) const;
+        const PresetGroup& presetSubGroup(int index) const;
         void setPreset(int index);
+        const Preset& getPreset(int index) const;
         const std::vector<PresetGroup>& getGroups() const;
         const std::vector<PresetGroup>& getSubGroups() const;
         const std::vector<Preset>& getPresets() const;
