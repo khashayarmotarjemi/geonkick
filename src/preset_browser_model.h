@@ -54,7 +54,7 @@ struct Preset {
  */
 class PresetBrowserModel {
  public:
-        PresetBrowserModel(GeonkickApi *api);
+        PresetBrowserModel(GeonkickApi *api, const std::path &path);
         void setPresetsPath(const std::path &path);
         const std::string& getPresetsPath() const;
         void setPresetGroup(int index);
@@ -67,8 +67,13 @@ class PresetBrowserModel {
         const std::vector<PresetGroup>& getSubGroups() const;
         const std::vector<Preset>& getPresets() const;
 
+protected:
+        void loadData();
+        void saveData();
+        void loadPresetBundle();
+
  private:
-        std::string presetsPath;
+        std::string configFilePath;
         std::vector<PresetGroup> presetsGroups;
         std::vector<PresetGroup> presetsSubGroups;
         std::vector<Preset> presetList;
