@@ -39,6 +39,7 @@ GeonkickApi::GeonkickApi()
         , eventQueue{nullptr}
         , currentLayer{Layer::Layer1}
 {
+        setSettings("Config/PresetBundles", "~/.geonkick/presetBundels.cfg");
 }
 
 GeonkickApi::~GeonkickApi()

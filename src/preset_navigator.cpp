@@ -1,5 +1,5 @@
 /**
- * File name: preset_navigator.h
+ * File name: preset_navigator.cpp
  * Project: Geonkick (A percussion synthesizer)
  *
  * Copyright (C) 2019 Iurie Nistor <http://geontime.com>
@@ -21,26 +21,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef GEONKICK_PRESET_NAVIGATOR_H
-#define GEONKICK_PRESET_NAVIGATOR_H
+#include "preset_navigator.h"
+#include "preset_browser_model.h"
 
-#include "globals.h"
-
-class PresetBrowserModel;
-
-/**
- * PresetNavigator
- *
- * A small widget that offers view and navigation throught presets.
- */
-class PresetNavigator: public GeonkickWidget {
- public:
-        PresetNavigator(GeonkickWidget *parent, PresetBrowserModel* model);
-        RK_DECL_ACT(openPresetBrowser, openPresetBrowser(),
-                    RK_ARG_TYPE(), RK_ARG_VAL());
-
- private:
-        PresetBrowserModel *browserModel;
-};
-
-#endif // GEONKICK_PRESET_NAVIGATOR_H
+PresetNavigator::PresetNavigator(GeonkickWidget *parent, PresetBrowserModel* model)
+        : GeonkickWidget(parent)
+        , browserModel{model}
+{
+}

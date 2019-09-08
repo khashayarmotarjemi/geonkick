@@ -23,8 +23,11 @@
 
 #include "top_bar.h"
 #include "geonkick_button.h"
+#include "preset_browser_model.h"
+//#include "preset_browser.h"
+#include "preset_navigator.h"
 
-#include "RkLabel.h"
+#include <RkLabel.h>
 
 extern const unsigned char rk_logo_png[];
 extern const unsigned char rk_open_active_png[];
@@ -48,6 +51,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         , layer2Button{nullptr}
         , layer3Button{nullptr}
         , geonkickApi{api}
+        , presetBrowserModel{nullptr}
 {
         setFixedWidth(parent->width());
         setFixedHeight(40);
@@ -93,9 +97,13 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         aboutButton->setCheckable(true);
         RK_ACT_BIND(aboutButton, toggled, RK_ACT_ARGS(bool b), this, openAbout());
 
-        /*        presetNavigator = new PresetNavigator(this, api);
+        presetBrowserModel = std::make_unique<PresetBrowserModel>(geonkickApi, parent->eventQueue());
+
+        auto presetNavigator = new PresetNavigator(this, presetBrowserModel.get());
         presetNavigator->setBackgroundColor(background());
-        presetNavigator->setTextColor({210, 226, 226, 140});*/
+        presetNavigator->setTextColor({210, 226, 226, 140});
+        RK_ACT_BIND(presetNavigator, openPresetBrowser,
+                    RK_ACT_ARGS(), this, openPresetBrowser());
 
         createLyersButtons();
         updateGui();
@@ -158,4 +166,10 @@ void TopBar::updateGui()
         layer1Button->setPressed(geonkickApi->isLayerEnabled(GeonkickApi::Layer::Layer1));
         layer2Button->setPressed(geonkickApi->isLayerEnabled(GeonkickApi::Layer::Layer2));
         layer3Button->setPressed(geonkickApi->isLayerEnabled(GeonkickApi::Layer::Layer3));
+}
+
+void TopBar::openPresetBrowser()
+{
+        GEONKICK_LOG_INFO("called");
+        //        new PresetBrowser(this, presetBrowserModel);
 }

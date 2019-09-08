@@ -1,14 +1,26 @@
 {
     "name": "Geontime"
     "author": "Geontime",
-    "page": "http://geontime.com"
+    "authorUrl": "http://geontime.com"
     "license": "CC-BY 4.0",
-    "groups": [
+    "presetGroups": [
         {
             name: "Kicks",
-            groups: [
-            "Kick-1_5_2.gkick",
-            "Kik-1_5_1.gkick"
+            presets: [
+                {
+                   "name": "Kick-1_5_2",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "http://geontime.com",
+                   "file": "Kick-1_5_2.gkick",
+                },
+                {
+                   "name": "Kick-1_5_2",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "http://geontime.com",
+                   "file": "Kik-1_5_1.gkick",
+                }
             ]
         },
         {

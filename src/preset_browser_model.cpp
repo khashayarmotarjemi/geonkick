@@ -21,19 +21,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "globals.h"
+#include "preset_browser_model.h"
 #include "geonkick_api.h"
 
-#include <libconfig.h++>
-#include <rapidjson/document.h>
-#include <rapidjson/writer.h>
-#include <rapidjson/stringbuffer.h>
+#include <RkEventQueue.h>
 
-PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, const std::string &path)
-        : geonkickApi{api},
-        , configFilePath{path}
+#include <libconfig.h++>
+
+PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, RkEventQueue *queue)
+        : geonkickApi{api}
+        , eventQueue{queue}
         , presetBundleIndex{-1}
-        , bundleGroupIndex{-1}
+        , presetGroupIndex{-1}
         , presetIndex{-1}
 {
         loadData();
@@ -42,35 +41,32 @@ PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, const std::string &path
 void PresetBrowserModel::loadData()
 {
         libconfig::Config cfg;
+        auto configFilePath = geonkickApi->getSettings("Config/PresetBundels");
         try {
-                cfg.readFile(configFilePath);
+                cfg.readFile(configFilePath.c_str());
         } catch(...) {
                 GEONKICK_LOG_ERROR("can't read config file" << configFilePath);
-                return;
-        } catch(const ParseException &pex) {
-                GEONKICK_LOG_ERROR("parse error at " << pex.getFile()
-                                   << ":" << pex.getLine()
-                                   << " - " << pex.getError());
                 return;
         }
 
         // Load the preset bundles list and their data.
-        const Setting& root = cfg.getRoot();
+        const libconfig::Setting& root = cfg.getRoot();
         try {
-                const Setting &presetBundles = root["PresetBundles"];
+                const libconfig::Setting &presetBundles = root["PresetBundles"];
                 size_t n = 0;
                 for (const auto &presetBundle: presetBundles) {
                         std::string path;
-                        if (presetBundle.lookupValue("name")
+                        std::string name;
+                        if (presetBundle.lookupValue("name", name)
                             && presetBundle.lookupValue("path", path)) {
-                                bundle = std::make_unique<PresetBundle>;
-                                bundle->name = "Unknown " + std::to_string(n++);
+                                auto bundle = std::make_unique<PresetBundle>();
+                                bundle->name = name.empty() ? "Unknown " + std::to_string(n++) : name;
                                 if (loadPresetBundle(bundle, path))
                                         browserBundles.emplace_back(bundle);
                         }
                 }
-        } catch(const SettingNotFoundException &nfex) {
-                GEONKICK_LOG_WARNING("an error occurred on getting preset bundles info");
+        } catch(const libconfig::SettingNotFoundException &nfex) {
+                GEONKICK_LOG_ERROR("an error occurred on getting preset bundles info");
         }
 }
 
@@ -102,77 +98,60 @@ bool PresetBrowserModel::loadPresetBundle(const std::unique_ptr<PresetBundle> &b
                                 bundle->name = m.value.GetString();
                         if (m.name == "author"  && m.value.IsString())
                                 bundle->author = m.value.GetString();
+                        if (m.name == "authorUrl"  && m.value.IsString())
+                                bundle->authorUrl = m.value.GetString();
                         if (m.name == "license"  && m.value.IsString())
                                 bundle->license = m.value.GetString();
-                        if (m.name == "groups" && m.value.IsArray())
-                                loadBundleGroups(bundle->groups, m.value);
+                        if (m.name == "presetGroups" && m.value.IsArray())
+                                loadPresetGroups(bundle->groups, m.value);
                 }
         }
 }
 
-void PresetBrowserModel::loadBundleGroups(std::vector<std::unique_ptr<BundleGroup>> &bundleGroups,
-                                          const rapidjson::Value &groups,
-                                          const std::string& path)
+void PresetBrowserModel::loadPresetGroups(std::vector<std::unique_ptr<PresetGroup>> &bundleGroups,
+                                          const rapidjson::Value &groups)
 {
         size_t n = 0;
         for (const auto &e: groups.GetObject()) {
                 if (!e.IsObject())
                         continue;
-                auto group = std::make_unique<BundleGroup>;
+                auto group = std::make_unique<PresetGroup>();
                 group->name = "Unknown " + std::to_string(n++);
                 if (e.name == "name" && e.value.IsString())
                         group->name = m.value.GetString();
                 if (e.name == "presets" && e.value.IsArray())
-                        loadGroupPresets(group->presets, m.value, path);
+                        loadGroupPresets(group->presets, m.value);
                 bundleGroups.emplace_back(group);
         }
 }
 
-void PresetBrowserModel::loadGroupPresets(std::vector<std::unique_ptr<Preset>> &groupPresets,
-                                          const rapidjson::Value &presets,
-                                          const std::string& path)
+void PresetBrowserModel::loadPresets(std::vector<std::unique_ptr<Preset>> &presets,
+                                     const rapidjson::Value &presetsArray)
 {
         size_t n = 0;
-        for (const auto &e: groups.GetObject()) {
+        for (const auto &e: presets.GetObject()) {
                 if (!e.IsString())
                         continue;
-                auto preset = std::make_unique<Preset>;
+                auto preset = std::make_unique<Preset>();
                 preset->name = std::to_string(n++);
-                if (loadPresetInfo(&preset))
+                if (loadPresetInfo(&preset, e))
                         groupPresets.emplace_back(preset);
         }
 }
 
-bool PresetBrowserModel::loadPresetInfo(const std::unique_ptr<Preset> &preset, const std::string &path)
+bool PresetBrowserModel::loadPresetInfo(const std::unique_ptr<Preset> &preset,
+                                        const rapidjson::Value &presetValue)
 {
-        std::filesystem::path filePath(path);
-        if (filePath.extension().empty()
-            || (filePath.extension() != ".gkickp"
-            && filePath.extension() != ".GKICKP")) {
-                RK_LOG_ERROR("can't open preset. Wrong file format.");
-                return false;
-        }
-
-        std::ifstream file;
-        file.open(std::filesystem::absolute(filePath));
-        if (!file.is_open()) {
-                RK_LOG_ERROR("can't open preset: " << filePath);
-                return false;
-        }
-        std::string fileData((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
-
-        rapidjson::Document document;
-        document.Parse(fileData.c_str());
         if (document.isObject()) {
-                for (const auto &m: document.GetObject()) {
+                for (const auto &m: .GetObject()) {
                         if (m.name == "name" && m.value.IsString())
                                 preset->name = m.value.GetString();
                         if (m.name == "author"  && m.value.IsString())
                                 preset->author = m.value.GetString();
-                        if (m.name == "url"  && m.value.IsString())
-                                preset->url = m.value.GetString();
+                        if (m.name == "authorUrl"  && m.value.IsString())
+                                preset->authorUrl = m.value.GetString();
                         if (m.name == "license"  && m.value.IsString())
-                                bundle->license = m.value.GetString();
+                                preset->license = m.value.GetString();
                 }
         }
 

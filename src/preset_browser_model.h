@@ -25,17 +25,23 @@
 #define GEONKICK_PRESET_BROWSER_MODEL_H
 
 #include "globals.h"
-#include "geonkick_api.h"
+
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
+
+class RkEventQueue;
+class GeonkickApi;
 
 struct Preset {
         std::string name;
         std::string author;
-        std::string url;
+        std::string authorUrl;
         std::string license;
-        std::path path;
+        std::filesystem::path path;
 };
 
-struct BundleGroup {
+struct PresetGroup {
         std::string name;
         std::vector<std::unique_ptr<Preset>> presets;
 };
@@ -43,11 +49,11 @@ struct BundleGroup {
 struct PresetBundle {
         std::string name;
         std::string author;
-        std::string url;
+        std::string authorUrl;
         std::string license;
-        std::path path;
-        std::vector<std::qnique_ptr<PresetGroup>> groups;
-}
+        std::filesystem::path path;
+        std::vector<std::unique_ptr<PresetGroup>> groups;
+};
 
 /**
  * PresetBrowserModel class.
@@ -60,7 +66,8 @@ struct PresetBundle {
  */
 class PresetBrowserModel {
  public:
-        PresetBrowserModel(GeonkickApi *api, const std::path &path);
+        PresetBrowserModel(GeonkickApi *api,
+                           RkEventQueue *queue);
         ~PresetBrowserModel();
         const std::string& getPresetsPath() const;
         void setPresetBundle(int index);
@@ -72,20 +79,21 @@ class PresetBrowserModel {
 
  protected:
         void loadData();
-        bool loadPresetBundle(struct PresetBundle &bundle,
+        bool loadPresetBundle(const std::unique_ptr<PresetBundle> &bundle,
                               const std::string &path);
-        void loadBundleGroups(std::vector<std::uniqeu_ptr<BundleGroup>> &bundleGroups,
-                              const rapidjson::Value &groups,
-                              const std::string& path);
-        void loadGroupPresets(std::vector<std::unique_ptr<Preset>> &groupPresets,
-                              const rapidjson::Value &presets,
-                              const std::string& path);
+        void loadPresetGroups(std::vector<std::unique_ptr<PresetGroup>> &presetGroups,
+                              const rapidjson::Value &groups);
+        void loadPresets(std::vector<std::unique_ptr<Preset>> &presets,
+                         const rapidjson::Value &presetsArray);
+        bool loadPresetInfo(const std::unique_ptr<Preset> &preset,
+                            const rapidjson::Value &presetValue);
 
  private:
-        std::string configFilePath;
+        GeonkickApi *geonkickApi;
+        RkEventQueue *eventQueue;
         std::vector<std::unique_ptr<PresetBundle>> browserBundles;
         int presetBundleIndex;
-        int bundleGroupIndex;
+        int presetGroupIndex;
         int presetIndex;
 };
 

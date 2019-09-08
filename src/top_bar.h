@@ -29,6 +29,7 @@
 
 class RkLabel;
 class GeonkickButton;
+class PresetBrowserModel;
 
 class TopBar : public GeonkickWidget
 {
@@ -46,6 +47,7 @@ class TopBar : public GeonkickWidget
 
  protected:
         void createLyersButtons();
+        void openPresetBrowser();
 
  private:
         GeonkickButton *openFileButton;
@@ -56,6 +58,7 @@ class TopBar : public GeonkickWidget
         GeonkickButton *layer2Button;
         GeonkickButton *layer3Button;
         GeonkickApi *geonkickApi;
+        std::unique_ptr<PresetBrowserModel> presetBrowserModel;
 };
 
 #endif // GEONKICK_TOP_BAR_H
