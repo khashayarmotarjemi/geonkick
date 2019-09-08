@@ -37,7 +37,7 @@ struct Preset {
 
 struct BundleGroup {
         std::string name;
-        std::vector<Preset> presets;
+        std::vector<std::unique_ptr<Preset>> presets;
 };
 
 struct PresetBundle {
@@ -46,7 +46,7 @@ struct PresetBundle {
         std::string url;
         std::string license;
         std::path path;
-        std::vector<PresetGroup> groups;
+        std::vector<std::qnique_ptr<PresetGroup>> groups;
 }
 
 /**
@@ -62,27 +62,31 @@ class PresetBrowserModel {
  public:
         PresetBrowserModel(GeonkickApi *api, const std::path &path);
         ~PresetBrowserModel();
-        void setPresetsPath(const std::path &path);
         const std::string& getPresetsPath() const;
+        void setPresetBundle(int index);
+        const PresetBundle* presetBundle(int index) const;
         void setPresetGroup(int index);
-        const PresetGroup& presetGroup(int index) const;
-        void setPresetSubGroup(int index);
-        const PresetGroup& presetSubGroup(int index) const;
+        const PresetGroup* presetGroup(int index) const;
         void setPreset(int index);
-        const Preset& getPreset(int index) const;
-        const std::vector<PresetTreeNode*>& getGroups() const;
-        const std::vector<PresetTreeNode*>& getSubGroups() const;
-        const std::vector<PresetTreeNode*>& getPresets() const;
+        const Preset* getPreset(int index) const;
 
-protected:
+ protected:
         void loadData();
-        void saveData();
-        void loadPresetBundle();
+        bool loadPresetBundle(struct PresetBundle &bundle,
+                              const std::string &path);
+        void loadBundleGroups(std::vector<std::uniqeu_ptr<BundleGroup>> &bundleGroups,
+                              const rapidjson::Value &groups,
+                              const std::string& path);
+        void loadGroupPresets(std::vector<std::unique_ptr<Preset>> &groupPresets,
+                              const rapidjson::Value &presets,
+                              const std::string& path);
 
  private:
         std::string configFilePath;
-        std::vector<PresetBundle> browserBundles;
-        PresetTreeNode presetTree;
+        std::vector<std::unique_ptr<PresetBundle>> browserBundles;
+        int presetBundleIndex;
+        int bundleGroupIndex;
+        int presetIndex;
 };
 
 #endif // GEONKICK_PRESET_BROWSER_MODEL_H

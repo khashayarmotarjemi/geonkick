@@ -93,9 +93,9 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         aboutButton->setCheckable(true);
         RK_ACT_BIND(aboutButton, toggled, RK_ACT_ARGS(bool b), this, openAbout());
 
-        presetNavigator = new PresetNavigator(this, api);
+        /*        presetNavigator = new PresetNavigator(this, api);
         presetNavigator->setBackgroundColor(background());
-        presetNavigator->setTextColor({210, 226, 226, 140});
+        presetNavigator->setTextColor({210, 226, 226, 140});*/
 
         createLyersButtons();
         updateGui();
