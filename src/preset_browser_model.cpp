@@ -33,6 +33,11 @@ PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, const std::string &path
         loadData();
 }
 
+PresetBrowserModel::~PresetBrowserModel()
+{
+        freePresetTree();
+}
+
 void PresetBrowserModel::loadData()
 {
         libconfig::Config cfg;
@@ -52,20 +57,82 @@ void PresetBrowserModel::loadData()
         const Setting& root = cfg.getRoot();
         try {
                 const Setting &presetBundles = root["PresetBundles"];
+                size_t n = 0;
                 for (const auto &presetBundle: presetBundles) {
                         std::string path;
                         if (presetBundle.lookupValue("name")
-                            && presetBundle.lookupValue("path", path))
-                                loadPresetBundle(path);
+                            && presetBundle.lookupValue("path", path)) {
+                                PresetBundle bundle;
+                                bundle.name = "Unknown " + std::to_string(n++);
+                                if (loadPresetBundle(&bundle, path))
+                                        browserBundles.push_back(bundle);
+                        }
                 }
         } catch(const SettingNotFoundException &nfex) {
                 GEONKICK_LOG_WARNING("an error occurred on getting preset bundles info");
         }
 }
 
-void PresetBrowserModel::loadPresetBundle(const std::stirng &path)
+bool PresetBrowserModel::loadPresetBundle(struct PresetBundle &bundle, const std::string &path)
 {
+        std::filesystem::path filePath(path);
+        if (filePath.extension().empty()
+            || (filePath.extension() != ".gkickp"
+            && filePath.extension() != ".GKICKP")) {
+                RK_LOG_ERROR("can't open preset bundle. Wrong file format.");
+                return false;
+        }
 
+        std::ifstream file;
+        file.open(std::filesystem::absolute(filePath));
+        if (!file.is_open()) {
+                RK_LOG_ERROR("can't open preset: " << filePath);
+                return false;
+        }
+        std::string fileData((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+
+        rapidjson::Document document;
+        document.Parse(fileData.c_str());
+        if (document.IsObject()) {
+                for (const auto &m: document.GetObject()) {
+                        if (m.name == "name" && m.value.IsString())
+                                bundle.name = m.value.GetString();
+                        if (m.name == "author"  && m.value.IsString())
+                                bundle.author = m.value.GetString();
+                        if (m.name == "license"  && m.value.IsString())
+                                bundle.license = m.value.GetString();
+                        if (m.name == "groups" && m.value.IsArray())
+                                loadBundleGroups(bundle.groups, m.value);
+                }
+        }
+}
+
+void PresetBrowserModel::loadBundleGroups(std::vector<BundleGroup> &bundleGroups, const rapidjson::Value &groups)
+{
+        size_t n = 0;
+        for (const auto &e: groups.GetObject()) {
+                if (!e.IsObject())
+                        continue;
+                BundleGroup group;
+                group.name = "Unknown " + std::to_string(n++);
+                if (e.name == "name" && e.value.IsString())
+                        group.name = m.value.GetString();
+                if (e.name == "presets" && e.value.IsArray())
+                        loadGroupPresets(group.presets, m.value);
+                bundleGroups.push_back(group);
+        }
+}
+
+void PresetBrowserModel::loadGroupPresets(std::vector<Preset> &groupPresets, const rapidjson::Value &presets)
+{
+        size_t n = 0;
+        for (const auto &e: groups.GetObject()) {
+                if (!e.IsString())
+                        continue;
+                Preset preset;
+                if (loadPresetInfo(&preset))
+                        groupPresets.bush_back();
+        }
 }
 
 void PresetBrowserModel::setPresetsPath(const std::path &path)

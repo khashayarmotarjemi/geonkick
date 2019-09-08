@@ -27,21 +27,27 @@
 #include "globals.h"
 #include "geonkick_api.h"
 
-struct PresetGroup {
+struct Preset {
         std::string name;
-        std::string autor;
-        std::string autorUrl;
+        std::string author;
+        std::string url;
         std::string license;
         std::path path;
 };
 
-struct Preset {
+struct BundleGroup {
         std::string name;
-        std::string autor;
-        std::string autorUrl;
-        std::string license;
-        std::path filepath;
+        std::vector<Preset> presets;
 };
+
+struct PresetBundle {
+        std::string name;
+        std::string author;
+        std::string url;
+        std::string license;
+        std::path path;
+        std::vector<PresetGroup> groups;
+}
 
 /**
  * PresetBrowserModel class.
@@ -55,6 +61,7 @@ struct Preset {
 class PresetBrowserModel {
  public:
         PresetBrowserModel(GeonkickApi *api, const std::path &path);
+        ~PresetBrowserModel();
         void setPresetsPath(const std::path &path);
         const std::string& getPresetsPath() const;
         void setPresetGroup(int index);
@@ -63,9 +70,9 @@ class PresetBrowserModel {
         const PresetGroup& presetSubGroup(int index) const;
         void setPreset(int index);
         const Preset& getPreset(int index) const;
-        const std::vector<PresetGroup>& getGroups() const;
-        const std::vector<PresetGroup>& getSubGroups() const;
-        const std::vector<Preset>& getPresets() const;
+        const std::vector<PresetTreeNode*>& getGroups() const;
+        const std::vector<PresetTreeNode*>& getSubGroups() const;
+        const std::vector<PresetTreeNode*>& getPresets() const;
 
 protected:
         void loadData();
@@ -74,9 +81,8 @@ protected:
 
  private:
         std::string configFilePath;
-        std::vector<PresetGroup> presetsGroups;
-        std::vector<PresetGroup> presetsSubGroups;
-        std::vector<Preset> presetList;
+        std::vector<PresetBundle> browserBundles;
+        PresetTreeNode presetTree;
 };
 
 #endif // GEONKICK_PRESET_BROWSER_MODEL_H

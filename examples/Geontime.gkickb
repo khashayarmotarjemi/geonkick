@@ -1,0 +1,33 @@
+{
+    "name": "Geontime"
+    "author": "Geontime",
+    "page": "http://geontime.com"
+    "license": "CC-BY 4.0",
+    "groups": [
+        {
+            name: "Kicks",
+            groups: [
+            "Kick-1_5_2.gkick",
+            "Kik-1_5_1.gkick"
+            ]
+        },
+        {
+            "name": "Snares"
+            "groups": [
+                "Snare-1.5_dist.gkick",
+                "Snare-1_5.gkick",
+                "Snare-1_6_1.gkick",
+                "Snare-1_6.gkick"
+            ]
+        },
+        {
+            name: "Hit-Hats",
+            "groups": [
+                "Hit-Hat-FM-Long.gkick",
+                "Hit-Hat.gkick",
+                "Hit-Hat-Long.gkick",
+                "Hit-Hat_metalic_1.gkick"
+            ]
+        }
+    ]
+}
