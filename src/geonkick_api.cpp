@@ -39,7 +39,6 @@ GeonkickApi::GeonkickApi()
         , eventQueue{nullptr}
         , currentLayer{Layer::Layer1}
 {
-        setSettings("Config/PresetBundles", "~/.geonkick/presetBundels.cfg");
 }
 
 GeonkickApi::~GeonkickApi()
@@ -56,6 +55,15 @@ void GeonkickApi::setEventQueue(RkEventQueue *queue)
 
 bool GeonkickApi::init()
 {
+        auto homeDir = std::getenv("HOME");
+        if (homeDir == nullptr) {
+                GEONKICK_LOG_ERROR("can't get home directory");
+                return false;
+        }
+        auto configPath = std::filesystem::path(homeDir)
+                / std::filesystem::path(".geonkick/presetBundles.cfg");
+        setSettings("Config/PresetBundles", configPath.string());
+
   	if (geonkick_create(&geonkickApi) != GEONKICK_OK) {
 	        GEONKICK_LOG_ERROR("can't create geonkick API");
                 return false;

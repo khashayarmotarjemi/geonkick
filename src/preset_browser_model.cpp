@@ -41,11 +41,11 @@ PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, RkEventQueue *queue)
 void PresetBrowserModel::loadData()
 {
         libconfig::Config cfg;
-        auto configFilePath = geonkickApi->getSettings("Config/PresetBundels");
+        auto configFilePath = geonkickApi->getSettings("Config/PresetBundles");
         try {
                 cfg.readFile(configFilePath.c_str());
         } catch(...) {
-                GEONKICK_LOG_ERROR("can't read config file" << configFilePath);
+                GEONKICK_LOG_ERROR("can't read config file: " << configFilePath);
                 return;
         }
 
@@ -65,8 +65,8 @@ void PresetBrowserModel::loadData()
                                         browserBundles.emplace_back(std::move(bundle));
                         }
                 }
-        } catch(const libconfig::SettingNotFoundException &nfex) {
-                GEONKICK_LOG_ERROR("an error occurred on getting preset bundles info");
+        } catch (const libconfig::SettingNotFoundException &nfex) {
+                GEONKICK_LOG_INFO("can't get info  about preset bundles");
         }
 }
 
@@ -75,16 +75,16 @@ bool PresetBrowserModel::loadPresetBundle(const std::unique_ptr<PresetBundle> &b
 {
         std::filesystem::path filePath(path);
         if (filePath.extension().empty()
-            || (filePath.extension() != ".gkickp"
-            && filePath.extension() != ".GKICKP")) {
-                RK_LOG_ERROR("can't open preset bundle. Wrong file format.");
+            || (filePath.extension() != ".gkickb"
+            && filePath.extension() != ".GKICKB")) {
+                GEONKICK_LOG_ERROR("can't open preset bundle. Wrong file format.");
                 return false;
         }
 
         std::ifstream file;
         file.open(std::filesystem::absolute(filePath));
         if (!file.is_open()) {
-                RK_LOG_ERROR("can't open preset: " << filePath);
+                GEONKICK_LOG_ERROR("can't open preset: " << filePath);
                 return false;
         }
         std::string fileData((std::istreambuf_iterator<char>(file)),
@@ -113,14 +113,18 @@ void PresetBrowserModel::loadPresetGroups(std::vector<std::unique_ptr<PresetGrou
                                           const rapidjson::Value &groups)
 {
         size_t n = 0;
-        for (const auto &e: groups.GetObject()) {
-                auto group = std::make_unique<PresetGroup>();
-                group->name = "Unknown " + std::to_string(n++);
-                if (e.name == "name" && e.value.IsString())
-                        group->name = e.value.GetString();
-                if (e.name == "presets" && e.value.IsArray())
-                        loadPresets(group->presets, e.value);
-                bundleGroups.emplace_back(std::move(group));
+        for (const auto &e: groups.GetArray()) {
+                if (e.IsObject()) {
+                        for (const auto &m: e.GetObject()) {
+                                auto group = std::make_unique<PresetGroup>();
+                                group->name = "Unknown " + std::to_string(n++);
+                                if (m.name == "name" && m.value.IsString())
+                                        group->name = m.value.GetString();
+                                if (m.name == "presets" && m.value.IsArray())
+                                        loadPresets(group->presets, m.value);
+                                bundleGroups.emplace_back(std::move(group));
+                        }
+                }
         }
 }
 
