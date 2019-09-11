@@ -25,6 +25,7 @@
 #define GEONKICK_PRESET_NAVIGATOR_H
 
 #include "globals.h"
+#include "geonkick_widget.h"
 
 class PresetBrowserModel;
 

@@ -62,7 +62,7 @@ void PresetBrowserModel::loadData()
                                 auto bundle = std::make_unique<PresetBundle>();
                                 bundle->name = name.empty() ? "Unknown " + std::to_string(n++) : name;
                                 if (loadPresetBundle(bundle, path))
-                                        browserBundles.emplace_back(bundle);
+                                        browserBundles.emplace_back(std::move(bundle));
                         }
                 }
         } catch(const libconfig::SettingNotFoundException &nfex) {
@@ -106,6 +106,7 @@ bool PresetBrowserModel::loadPresetBundle(const std::unique_ptr<PresetBundle> &b
                                 loadPresetGroups(bundle->groups, m.value);
                 }
         }
+        return true;
 }
 
 void PresetBrowserModel::loadPresetGroups(std::vector<std::unique_ptr<PresetGroup>> &bundleGroups,
@@ -113,15 +114,13 @@ void PresetBrowserModel::loadPresetGroups(std::vector<std::unique_ptr<PresetGrou
 {
         size_t n = 0;
         for (const auto &e: groups.GetObject()) {
-                if (!e.IsObject())
-                        continue;
                 auto group = std::make_unique<PresetGroup>();
                 group->name = "Unknown " + std::to_string(n++);
                 if (e.name == "name" && e.value.IsString())
-                        group->name = m.value.GetString();
+                        group->name = e.value.GetString();
                 if (e.name == "presets" && e.value.IsArray())
-                        loadGroupPresets(group->presets, m.value);
-                bundleGroups.emplace_back(group);
+                        loadPresets(group->presets, e.value);
+                bundleGroups.emplace_back(std::move(group));
         }
 }
 
@@ -129,21 +128,19 @@ void PresetBrowserModel::loadPresets(std::vector<std::unique_ptr<Preset>> &prese
                                      const rapidjson::Value &presetsArray)
 {
         size_t n = 0;
-        for (const auto &e: presets.GetObject()) {
-                if (!e.IsString())
-                        continue;
+        for (const auto &e: presetsArray.GetArray()) {
                 auto preset = std::make_unique<Preset>();
                 preset->name = std::to_string(n++);
-                if (loadPresetInfo(&preset, e))
-                        groupPresets.emplace_back(preset);
+                if (loadPresetInfo(preset, e))
+                        presets.emplace_back(std::move(preset));
         }
 }
 
 bool PresetBrowserModel::loadPresetInfo(const std::unique_ptr<Preset> &preset,
                                         const rapidjson::Value &presetValue)
 {
-        if (document.isObject()) {
-                for (const auto &m: .GetObject()) {
+        if (presetValue.IsObject()) {
+                for (const auto &m: presetValue.GetObject()) {
                         if (m.name == "name" && m.value.IsString())
                                 preset->name = m.value.GetString();
                         if (m.name == "author"  && m.value.IsString())
@@ -176,7 +173,7 @@ void PresetBrowserModel::setPresetGroup(int index)
 {
         if (!browserBundles.empty() && presetBundleIndex > -1
             && presetBundleIndex < browserBundles.size()) {
-                auto groups = browserBundles[presetBundleIndex]->groups;
+               auto &groups = browserBundles[presetBundleIndex]->groups;
                 if (!groups.empty() && index > -1 && index < groups.size())
                         presetGroupIndex = index;
         }
@@ -186,7 +183,7 @@ const PresetGroup* PresetBrowserModel::presetGroup(int index) const
 {
         if (!browserBundles.empty() && presetBundleIndex > -1
             && presetBundleIndex < browserBundles.size()) {
-                auto groups = browserBundles[presetBundleIndex]->groups;
+                auto &groups = browserBundles[presetBundleIndex]->groups;
                 if (!groups.empty() && index > -1 && index < groups.size())
                         return groups[index].get();
         }
@@ -197,26 +194,25 @@ void PresetBrowserModel::setPreset(int index)
 {
         if (!browserBundles.empty() && presetBundleIndex > -1
             && presetBundleIndex < browserBundles.size()) {
-                auto groups = browserBundles[presetBundleIndex]->groups;
+                auto &groups = browserBundles[presetBundleIndex]->groups;
                 if (!groups.empty() && presetGroupIndex > -1 && presetGroupIndex < groups.size()) {
-                        auto presets = groups[presetGroupIndex]->presets;
+                        auto &presets = groups[presetGroupIndex]->presets;
                         if (!presets.empty() && index > -1 && index < groups.size())
                                 presetIndex = index;
                 }
         }
-
-        return nullptr;
 }
 
 const Preset* PresetBrowserModel::getPreset(int index) const
 {
         if (!browserBundles.empty() && presetBundleIndex > -1
             && presetBundleIndex < browserBundles.size()) {
-                auto groups = browserBundles[presetBundleIndex]->groups;
+                auto &groups = browserBundles[presetBundleIndex]->groups;
                 if (!groups.empty() && presetGroupIndex > -1 && presetGroupIndex < groups.size()) {
-                        auto presets = groups[presetGroupIndex]->presets;
+                        auto &presets = groups[presetGroupIndex]->presets;
                         if (!presets.empty() && index > -1 && index < groups.size())
-                                return presets[index];
+                                return presets[index].get();
                 }
         }
+        return nullptr;
 }

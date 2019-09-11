@@ -68,7 +68,6 @@ class PresetBrowserModel {
  public:
         PresetBrowserModel(GeonkickApi *api,
                            RkEventQueue *queue);
-        ~PresetBrowserModel();
         const std::string& getPresetsPath() const;
         void setPresetBundle(int index);
         const PresetBundle* presetBundle(int index) const;
