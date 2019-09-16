@@ -103,7 +103,7 @@ void Envelope::drawTimeScale(RkPainter &painter)
                 painter.drawLine(x, point.y() - font.size() - 4, x, point.y() - H());
 
                 RkRect rect(x - 12, point.y() - 12, 25, font.size());
-                painter.setPen(RkColor(110, 110, 110));
+                painter.setPen(RkPen(RkColor(110, 110, 110)));
                 painter.drawText(rect, std::to_string(std::llround(i * val)));
                 x += dx;
         }

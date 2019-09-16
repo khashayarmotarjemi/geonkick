@@ -58,6 +58,7 @@ public:
    void mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event) final;
    void mouseButtonReleaseEvent(const std::shared_ptr<RkMouseEvent> &event) final;
    void mouseMoveEvent(const std::shared_ptr<RkMouseEvent> &event) final;
+   void wheelEvent(const std::shared_ptr<RkWheelEvent> &event) final;
 
  private:
    RkImage knobImage;

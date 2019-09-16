@@ -32,6 +32,7 @@
 
 class RkEventQueue;
 class GeonkickApi;
+class RkModel;
 
 struct Preset {
         std::string name;
@@ -76,6 +77,10 @@ class PresetBrowserModel {
         void setPreset(int index);
         const Preset* getPreset(int index) const;
 
+        RkModel* bundlesModel() const;
+        RkModel* groupsModel() const;
+        RkModel* presetsModel() const;
+
  protected:
         void loadData();
         bool loadPresetBundle(const std::unique_ptr<PresetBundle> &bundle,
@@ -88,6 +93,38 @@ class PresetBrowserModel {
                             const rapidjson::Value &presetValue);
 
  private:
+
+        class BundlesModel : public RkModel {
+                BundlesModel(RkEventQueue *eventQueue) : RkModel(eventQueue);
+                RkVariant data(int index, DataType type) const final
+                {
+                        const bundle = presetBundle(index);
+                        if (bundle) {
+                                if (type == DataType::Text)
+                                        return RkVaraint(bundle.name);
+                                else if (RkModel::DataType::Color && index == selectedIndex())
+                                        return RkVariant(RkColor(255, 255, 255));
+                                else if (type == RkModel::DataType::Background && index == selectedIndex())
+                                        return RkVariant(RkColor(100, 100, 200));
+
+                        }
+                        return RkVariant();
+                }
+
+                size_t rows() const final
+                {
+                        return presetBundles().size();
+                }
+        };
+
+        class GroupsModel : public RkModel {
+                GroupsModel(RkEventQueue *eventQueue) : RkModel(eventQueue);
+        };
+
+        class PresetsModel : public RkModel {
+                PresetsModel(RkEventQueue *eventQueue) : RkModel(eventQueue);
+        };
+
         GeonkickApi *geonkickApi;
         RkEventQueue *eventQueue;
         std::vector<std::unique_ptr<PresetBundle>> browserBundles;

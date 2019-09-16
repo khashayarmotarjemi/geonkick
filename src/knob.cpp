@@ -93,13 +93,6 @@ void Knob::rotateKnob(int degree)
 
 void Knob::mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event)
 {
-        if (event->button() == RkMouseEvent::ButtonType::WheelUp
-            || event->button() == RkMouseEvent::ButtonType::WheelDown) {
-                rotateKnob(event->button() == RkMouseEvent::ButtonType::WheelUp ? 2 : -2);
-                update();
-                return;
-        }
-
         if (!knobImage.isNull()) {
                 int xCenter = width() / 2;
                 int yCenter = height() / 2;
@@ -129,6 +122,12 @@ void Knob::mouseMoveEvent(const std::shared_ptr<RkMouseEvent> &event)
                 lastPositionPoint.setY(event->y());
                 update();
         }
+}
+
+void Knob::wheelEvent(const std::shared_ptr<RkWheelEvent> &event)
+{
+        rotateKnob(event->direction() == RkWheelEvent::Direction::WheelUp ? 2 : -2);
+        update();
 }
 
 double Knob::getValue(void) const

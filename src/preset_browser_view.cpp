@@ -23,10 +23,46 @@
 
 #include "preset_browser_view.h"
 
+#include <RkListView.h>
+
 PresetBrowserView::PresetBrowserView(GeonkickWidget *parent)
         : GeonkickWidget(parent, Rk::WindowFlags::Dialog)
+        , browserModel{nullptr}
+        , bundleListView{nullptr}
+        , bundleGroupsView{nullptr}
+        , presetListView{nullptr}
+
 {
         setFixedSize(940, 600);
         setTitle("Preset Browser - " + std::string(GEOKICK_APP_NAME));
         show();
+
+        int padding = 15;
+        int headerHeight = 50;
+        auto listSize = RkSize((width() - 4 * padding) / 3, height() - headerHeight - padding);
+
+        bundleListView = new RkListView(this);
+        bundleListView->setBackgroundColor({40, 40, 40});
+        bundleListView->setFixedSize(listSize);
+        bundleListView->setPosition(padding, headerHeight);
+
+        bundleGroupsView  = new RkListView(this);
+        bundleGroupsView->setBackgroundColor({40, 40, 40});
+        bundleGroupsView->setFixedSize(listSize);
+        bundleGroupsView->setPosition(bundleListView->x() + bundleListView->width() + padding,
+                                      headerHeight);
+
+        presetListView = new RkListView(this);
+        presetListView->setBackgroundColor({40, 40, 40});
+        presetListView->setFixedSize(listSize);
+        presetListView->setPosition(bundleGroupsView->x() + bundleGroupsView->width() + padding,
+                                    headerHeight);
+}
+
+PresetBrowserView::setModel(PresetBrowserModel *model)
+{
+        presetBrowserModel = model;
+        bundleListView->setModel(model->bundlesModel());
+        bundleGroupsView->setModel(model->groupsModel());
+        presetListView->setModel(model->presetsModel());
 }

@@ -26,7 +26,7 @@
 
 #include "geonkick_widget.h"
 
-//class RkListView;
+class RkListView;
 
 class PresetBrowserView : public GeonkickWidget {
  public:
@@ -34,9 +34,9 @@ class PresetBrowserView : public GeonkickWidget {
 
  protected:
  private:
-        //        std::unique_ptr<RkListView> bundleListView;
-        //        std::unique_ptr<RkListView> bundleGroupsView;
-        //        std::unique_ptr<RkListView> presetListView;
+        RkListView *bundleListView;
+        RkListView *bundleGroupsView;
+        RkListView *presetListView;
 };
 
 #endif // GEONKICK_PRESET_BROWSER_VIEW_H
