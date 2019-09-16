@@ -1,5 +1,5 @@
 /**
- * File name: preset_navigator.cpp
+ * File name: preset_browser_view.cpp
  * Project: Geonkick (A percussion synthesizer)
  *
  * Copyright (C) 2019 Iurie Nistor <http://geontime.com>
@@ -21,12 +21,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "preset_navigator.h"
-#include "preset_browser_model.h"
+#include "preset_browser_view.h"
 
-PresetNavigator::PresetNavigator(GeonkickWidget *parent, PresetBrowserModel* model)
-        : GeonkickWidget(parent)
-        , browserModel{model}
+PresetBrowserView::PresetBrowserView(GeonkickWidget *parent)
+        : GeonkickWidget(parent, Rk::WindowFlags::Dialog)
 {
+        setFixedSize(940, 600);
+        setTitle("Preset Browser - " + std::string(GEOKICK_APP_NAME));
         show();
 }

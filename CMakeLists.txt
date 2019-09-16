@@ -70,6 +70,7 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/about.h
   ${GKICK_COMMON_DIR}/export_widget.h
   ${GKICK_COMMON_DIR}/preset_browser_model.h
+  ${GKICK_COMMON_DIR}/preset_browser_view.h
   ${GKICK_COMMON_DIR}/preset_navigator.h
   ${GKICK_COMMON_DIR}/mainwindow.h)
 
@@ -102,6 +103,7 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/export_widget.cpp
   ${GKICK_COMMON_DIR}/about.cpp
   ${GKICK_COMMON_DIR}/preset_browser_model.cpp
+  ${GKICK_COMMON_DIR}/preset_browser_view.cpp
   ${GKICK_COMMON_DIR}/preset_navigator.cpp
   ${GKICK_COMMON_DIR}/mainwindow.cpp)
 

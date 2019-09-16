@@ -39,6 +39,10 @@ class PresetNavigator: public GeonkickWidget {
         PresetNavigator(GeonkickWidget *parent, PresetBrowserModel* model);
         RK_DECL_ACT(openPresetBrowser, openPresetBrowser(),
                     RK_ARG_TYPE(), RK_ARG_VAL());
+ protected:
+        void mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event) final {
+                action openPresetBrowser();
+        }
 
  private:
         PresetBrowserModel *browserModel;

@@ -24,7 +24,7 @@
 #include "top_bar.h"
 #include "geonkick_button.h"
 #include "preset_browser_model.h"
-//#include "preset_browser.h"
+#include "preset_browser_view.h"
 #include "preset_navigator.h"
 
 #include <RkLabel.h>
@@ -100,8 +100,10 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         presetBrowserModel = std::make_unique<PresetBrowserModel>(geonkickApi, parent->eventQueue());
 
         auto presetNavigator = new PresetNavigator(this, presetBrowserModel.get());
-        presetNavigator->setBackgroundColor(background());
+        presetNavigator->setBackgroundColor({100, 100, 100});
         presetNavigator->setTextColor({210, 226, 226, 140});
+        presetNavigator->setPosition(aboutButton->x() + aboutButton->width() + 10, aboutButton->y());
+        presetNavigator->setSize(235, 30);
         RK_ACT_BIND(presetNavigator, openPresetBrowser,
                     RK_ACT_ARGS(), this, openPresetBrowser());
 
@@ -170,6 +172,5 @@ void TopBar::updateGui()
 
 void TopBar::openPresetBrowser()
 {
-        GEONKICK_LOG_INFO("called");
-        //        new PresetBrowser(this, presetBrowserModel);
+        new PresetBrowserView(this);
 }
