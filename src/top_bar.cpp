@@ -172,5 +172,5 @@ void TopBar::updateGui()
 
 void TopBar::openPresetBrowser()
 {
-        new PresetBrowserView(this);
+        new PresetBrowserView(this, presetBrowserModel.get());
 }

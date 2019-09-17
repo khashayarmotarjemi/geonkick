@@ -31,9 +31,12 @@
 PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, RkEventQueue *queue)
         : geonkickApi{api}
         , eventQueue{queue}
-        , presetBundleIndex{-1}
-        , presetGroupIndex{-1}
-        , presetIndex{-1}
+        , presetBundleIndex{0}
+        , presetGroupIndex{0}
+        , presetIndex{0}
+        , bundlesModel{std::make_unique<BundlesModel>(*this)}
+        , groupsModel{std::make_unique<GroupsModel>(*this)}
+        , presetsModel{std::make_unique<PresetsModel>(*this)}
 {
         loadData();
 }
@@ -68,6 +71,8 @@ void PresetBrowserModel::loadData()
         } catch (const libconfig::SettingNotFoundException &nfex) {
                 GEONKICK_LOG_INFO("can't get info  about preset bundles");
         }
+
+        RK_LOG_DEBUG("browserBundles: " << browserBundles.size());
 }
 
 bool PresetBrowserModel::loadPresetBundle(const std::unique_ptr<PresetBundle> &bundle,
@@ -219,4 +224,19 @@ const Preset* PresetBrowserModel::getPreset(int index) const
                 }
         }
         return nullptr;
+}
+
+RkModel* PresetBrowserModel::getBundlesModel() const
+{
+        return static_cast<RkModel*>(bundlesModel.get());
+}
+
+RkModel* PresetBrowserModel::getGroupsModel() const
+{
+        return static_cast<RkModel*>(groupsModel.get());
+}
+
+RkModel* PresetBrowserModel::getPresetsModel() const
+{
+        return static_cast<RkModel*>(presetsModel.get());
 }

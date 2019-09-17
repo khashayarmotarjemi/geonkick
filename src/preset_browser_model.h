@@ -26,13 +26,14 @@
 
 #include "globals.h"
 
+#include <RkModel.h>
+
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
 class RkEventQueue;
 class GeonkickApi;
-class RkModel;
 
 struct Preset {
         std::string name;
@@ -77,9 +78,9 @@ class PresetBrowserModel {
         void setPreset(int index);
         const Preset* getPreset(int index) const;
 
-        RkModel* bundlesModel() const;
-        RkModel* groupsModel() const;
-        RkModel* presetsModel() const;
+        RkModel* getBundlesModel() const;
+        RkModel* getGroupsModel() const;
+        RkModel* getPresetsModel() const;
 
  protected:
         void loadData();
@@ -95,14 +96,17 @@ class PresetBrowserModel {
  private:
 
         class BundlesModel : public RkModel {
-                BundlesModel(RkEventQueue *eventQueue) : RkModel(eventQueue);
+          public:
+                BundlesModel(PresetBrowserModel &parent)
+                        : RkModel(parent.eventQueue)
+                        , parentModel{parent} {}
                 RkVariant data(int index, DataType type) const final
                 {
-                        const bundle = presetBundle(index);
+                        const auto bundle = parentModel.presetBundle(index);
                         if (bundle) {
                                 if (type == DataType::Text)
-                                        return RkVaraint(bundle.name);
-                                else if (RkModel::DataType::Color && index == selectedIndex())
+                                        return RkVariant(bundle->name);
+                                else if (type == RkModel::DataType::Color && index == selectedIndex())
                                         return RkVariant(RkColor(255, 255, 255));
                                 else if (type == RkModel::DataType::Background && index == selectedIndex())
                                         return RkVariant(RkColor(100, 100, 200));
@@ -113,16 +117,71 @@ class PresetBrowserModel {
 
                 size_t rows() const final
                 {
-                        return presetBundles().size();
+                        RK_LOG_DEBUG("browserBundles: " << parentModel.browserBundles.size());
+                        return parentModel.browserBundles.size();
                 }
+          private:
+                PresetBrowserModel &parentModel;
         };
 
         class GroupsModel : public RkModel {
-                GroupsModel(RkEventQueue *eventQueue) : RkModel(eventQueue);
+          public:
+                GroupsModel(PresetBrowserModel& parent)
+                        : RkModel(parent.eventQueue)
+                        , parentModel{parent} {}
+                RkVariant data(int index, DataType type) const final
+                {
+                        const auto group = parentModel.presetGroup(index);
+                        if (group) {
+                                if (type == DataType::Text)
+                                        return RkVariant(group->name);
+                                else if (type == RkModel::DataType::Color && index == selectedIndex())
+                                        return RkVariant(RkColor(255, 255, 255));
+                                else if (type == RkModel::DataType::Background && index == selectedIndex())
+                                        return RkVariant(RkColor(100, 100, 200));
+                        }
+                        return RkVariant();
+                }
+
+                size_t rows() const final
+                {
+                        const auto bundle = parentModel.presetBundle(parentModel.presetBundleIndex);
+                        if (bundle)
+                                return bundle->groups.size();
+                        return 0;
+                }
+          private:
+                PresetBrowserModel& parentModel;
         };
 
         class PresetsModel : public RkModel {
-                PresetsModel(RkEventQueue *eventQueue) : RkModel(eventQueue);
+          public:
+                PresetsModel(PresetBrowserModel &parent)
+                        : RkModel(parent.eventQueue)
+                        , parentModel{parent} {}
+                RkVariant data(int index, DataType type) const final
+                {
+                        const auto preset = parentModel.getPreset(index);
+                        if (preset) {
+                                if (type == DataType::Text)
+                                        return RkVariant(preset->name);
+                                else if (type == RkModel::DataType::Color && index == selectedIndex())
+                                        return RkVariant(RkColor(255, 255, 255));
+                                else if (type == RkModel::DataType::Background && index == selectedIndex())
+                                        return RkVariant(RkColor(100, 100, 200));
+                        }
+                        return RkVariant();
+                }
+
+                size_t rows() const final
+                {
+                        const auto group = parentModel.presetGroup(parentModel.presetGroupIndex);
+                        if (group)
+                                return group->presets.size();
+                        return 0;
+                }
+          private:
+                PresetBrowserModel &parentModel;
         };
 
         GeonkickApi *geonkickApi;
@@ -131,6 +190,9 @@ class PresetBrowserModel {
         int presetBundleIndex;
         int presetGroupIndex;
         int presetIndex;
+        std::unique_ptr<BundlesModel> bundlesModel;
+        std::unique_ptr<GroupsModel> groupsModel;
+        std::unique_ptr<PresetsModel> presetsModel;
 };
 
 #endif // GEONKICK_PRESET_BROWSER_MODEL_H

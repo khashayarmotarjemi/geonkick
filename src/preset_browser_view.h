@@ -27,13 +27,16 @@
 #include "geonkick_widget.h"
 
 class RkListView;
+class PresetBrowserModel;
 
 class PresetBrowserView : public GeonkickWidget {
  public:
-        PresetBrowserView(GeonkickWidget *parent);
+        PresetBrowserView(GeonkickWidget *parent, PresetBrowserModel *model);
+        void setModel(PresetBrowserModel *model);
 
  protected:
  private:
+        PresetBrowserModel *presetBrowserModel;
         RkListView *bundleListView;
         RkListView *bundleGroupsView;
         RkListView *presetListView;

@@ -22,12 +22,13 @@
  */
 
 #include "preset_browser_view.h"
+#include "preset_browser_model.h"
 
 #include <RkListView.h>
 
-PresetBrowserView::PresetBrowserView(GeonkickWidget *parent)
+PresetBrowserView::PresetBrowserView(GeonkickWidget *parent, PresetBrowserModel *model)
         : GeonkickWidget(parent, Rk::WindowFlags::Dialog)
-        , browserModel{nullptr}
+        , presetBrowserModel{model}
         , bundleListView{nullptr}
         , bundleGroupsView{nullptr}
         , presetListView{nullptr}
@@ -57,12 +58,15 @@ PresetBrowserView::PresetBrowserView(GeonkickWidget *parent)
         presetListView->setFixedSize(listSize);
         presetListView->setPosition(bundleGroupsView->x() + bundleGroupsView->width() + padding,
                                     headerHeight);
+        setModel(presetBrowserModel);
 }
 
-PresetBrowserView::setModel(PresetBrowserModel *model)
+void PresetBrowserView::setModel(PresetBrowserModel *model)
 {
-        presetBrowserModel = model;
-        bundleListView->setModel(model->bundlesModel());
-        bundleGroupsView->setModel(model->groupsModel());
-        presetListView->setModel(model->presetsModel());
+        if (model) {
+                presetBrowserModel = model;
+                bundleListView->setModel(model->getBundlesModel());
+                bundleGroupsView->setModel(model->getGroupsModel());
+                presetListView->setModel(model->getPresetsModel());
+        }
 }
