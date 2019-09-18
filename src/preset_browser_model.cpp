@@ -71,8 +71,6 @@ void PresetBrowserModel::loadData()
         } catch (const libconfig::SettingNotFoundException &nfex) {
                 GEONKICK_LOG_INFO("can't get info  about preset bundles");
         }
-
-        RK_LOG_DEBUG("browserBundles: " << browserBundles.size());
 }
 
 bool PresetBrowserModel::loadPresetBundle(const std::unique_ptr<PresetBundle> &bundle,
@@ -119,17 +117,15 @@ void PresetBrowserModel::loadPresetGroups(std::vector<std::unique_ptr<PresetGrou
 {
         size_t n = 0;
         for (const auto &e: groups.GetArray()) {
-                if (e.IsObject()) {
-                        for (const auto &m: e.GetObject()) {
-                                auto group = std::make_unique<PresetGroup>();
-                                group->name = "Unknown " + std::to_string(n++);
-                                if (m.name == "name" && m.value.IsString())
-                                        group->name = m.value.GetString();
-                                if (m.name == "presets" && m.value.IsArray())
-                                        loadPresets(group->presets, m.value);
-                                bundleGroups.emplace_back(std::move(group));
-                        }
+                auto group = std::make_unique<PresetGroup>();
+                group->name = "Unknown " + std::to_string(n++);
+                for (const auto &m: e.GetObject()) {
+                        if (m.name == "name" && m.value.IsString())
+                                group->name = m.value.GetString();
+                        if (m.name == "presets" && m.value.IsArray())
+                                loadPresets(group->presets, m.value);
                 }
+                bundleGroups.emplace_back(std::move(group));
         }
 }
 
@@ -219,7 +215,7 @@ const Preset* PresetBrowserModel::getPreset(int index) const
                 auto &groups = browserBundles[presetBundleIndex]->groups;
                 if (!groups.empty() && presetGroupIndex > -1 && presetGroupIndex < groups.size()) {
                         auto &presets = groups[presetGroupIndex]->presets;
-                        if (!presets.empty() && index > -1 && index < groups.size())
+                        if (!presets.empty() && index > -1 && index < presets.size())
                                 return presets[index].get();
                 }
         }

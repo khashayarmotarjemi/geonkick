@@ -117,7 +117,6 @@ class PresetBrowserModel {
 
                 size_t rows() const final
                 {
-                        RK_LOG_DEBUG("browserBundles: " << parentModel.browserBundles.size());
                         return parentModel.browserBundles.size();
                 }
           private:
