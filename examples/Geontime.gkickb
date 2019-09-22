@@ -22,6 +22,47 @@
                    "file": "Kik-1_5_1.gkick"
                 }
             ]
+        },
+        {
+            "name": "TimeKit",
+            "presets": [
+                {
+                   "name": "Kick",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "TimeKit/Kick-1_5_2.gkick"
+                },
+                {
+                   "name": "Snare",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "TimeKit/Kik-1_5_1.gkick"
+                },
+                {
+                   "name": "Hit-Hat",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "TimeKit/Hit-Hat.gkick"
+                },
+                {
+                   "name": "Hit-Hat-Closed",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "TimeKit/Hit-Hat-Closed.gkick"
+                },
+                {
+                   "name": "Shaker",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "TimeKit/Shaker.gkick"
+                }
+            ]
         }
+
     ]
 }

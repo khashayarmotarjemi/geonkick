@@ -119,6 +119,11 @@ class PresetBrowserModel {
                 {
                         return parentModel.browserBundles.size();
                 }
+
+                void selectIndex(int index) final
+                {
+                        parentModel.setPresetBundle(index);
+                }
           private:
                 PresetBrowserModel &parentModel;
         };
@@ -149,6 +154,12 @@ class PresetBrowserModel {
                                 return bundle->groups.size();
                         return 0;
                 }
+
+                void selectIndex(int index) final
+                {
+                        parentModel.setPresetGroup(index);
+                }
+
           private:
                 PresetBrowserModel& parentModel;
         };
@@ -178,6 +189,11 @@ class PresetBrowserModel {
                         if (group)
                                 return group->presets.size();
                         return 0;
+                }
+
+                void selectIndex(int index) final
+                {
+                        parentModel.selectPreset(index);
                 }
           private:
                 PresetBrowserModel &parentModel;
