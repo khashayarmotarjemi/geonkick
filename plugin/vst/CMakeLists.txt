@@ -1,3 +1,17 @@
+set(GKICK_VST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/plugin/vst)
+if (GKICK_VST_SDK_PATH)
+  list(APPEND CMAKE_MODULE_PATH "${GKICK_VST_SDK_PATH}/cmake/modules")
+  include(Global)
+  include(AddVST3Library)
+else (GKICK_VST_SDK_PATH)
+  message(STATUS "GKICK_VST_SDK_PATH was not set")
+endif(GKICK_VST_SDK_PATH)
+
+include_directories(${GKICK_VST_SDK_PATH})
+include_directories(${GKICK_REDKITE_SDK_PATH}/include)
+link_directories(${GKICK_VST_SDK_PATH}/build/lib/Debug)
+link_directories(${GKICK_REDKITE_SDK_PATH}/lib)
+
 set(GKICK_VST_HEADERS
   ${GKICK_VST_DIR}/GKickVstController.h
   ${GKICK_VST_DIR}/VstIds.h
