@@ -81,7 +81,8 @@ class GeonkickState
         double oscillatorFilterCutOffFreq(int index) const;
         double oscillatorFilterFactor(int index) const;
         std::vector<RkRealPoint> oscillatorEnvelopePoints(int index, GeonkickApi::EnvelopeType type) const;
-
+        void setOscillatorSample(int oscillatorIndex, const std::vector<float> &sample);
+        std::vector<float> getOscillatorSample(int oscillatorIndex) const;
         void enableCompressor(bool enable);
         bool isCompressorEnabled() const;
         void setCompressorAttack(double attack);
@@ -109,6 +110,10 @@ class GeonkickState
         void setCurrentLayer(GeonkickApi::Layer layer);
         void setLayerAmplitude(GeonkickApi::Layer layer, double amplitude);
         double getLayerAmplitude(GeonkickApi::Layer layer) const;
+        void tuneOutput(bool tune);
+        bool isOutputTuned() const;
+        static std::vector<float> fromBase64F(const std::string &str);
+        static std::string toBase64F(const std::vector<float> &data);
 
  protected:
         void parseKickObject(const rapidjson::Value &kick);
@@ -133,6 +138,7 @@ private:
                 , filterFrequency{200}
                 , filterFactor{1.0} {}
                 GeonkickApi::OscillatorType type;
+                std::vector<float> sample;
                 bool isEnabled;
                 bool isFm;
                 GeonkickApi::FunctionType function;
@@ -181,6 +187,7 @@ private:
         std::vector<bool> layers;
         std::vector<double> layersAmplitude;
         GeonkickApi::Layer currentLayer;
+        bool tunedOutput;
 };
 
 #endif // GEONKICK_STATE_H

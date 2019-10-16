@@ -59,6 +59,7 @@ class TopBar : public GeonkickWidget
         GeonkickButton *layer3Button;
         GeonkickApi *geonkickApi;
         std::unique_ptr<PresetBrowserModel> presetBrowserModel;
+        GeonkickButton *tuneCheckbox;
 };
 
 #endif // GEONKICK_TOP_BAR_H

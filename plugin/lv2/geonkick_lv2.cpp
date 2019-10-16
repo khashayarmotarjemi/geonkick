@@ -151,6 +151,7 @@ class GeonkickLv2Plugin
         {
                 RK_UNUSED(flags);
                 geonkickApi->setState(data);
+                action geonkickApi->stateChanged();
         }
 
         std::string getStateData()
@@ -175,10 +176,10 @@ class GeonkickLv2Plugin
                                 switch (lv2_midi_message_type(msg))
                                 {
                                 case LV2_MIDI_MSG_NOTE_ON:
-                                        geonkickApi->setKeyPressed(true, msg[2]);
+                                        geonkickApi->setKeyPressed(true, msg[1], msg[2]);
                                                 break;
                                 case LV2_MIDI_MSG_NOTE_OFF:
-                                        geonkickApi->setKeyPressed(false, msg[2]);
+                                        geonkickApi->setKeyPressed(false, msg[1], msg[2]);
                                                 break;
                                 default:
                                         break;

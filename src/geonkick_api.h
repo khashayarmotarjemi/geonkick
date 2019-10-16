@@ -59,7 +59,7 @@ class GeonkickApi {
           NoiseWhite    = GEONKICK_OSC_FUNC_NOISE_WHITE,
           NoisePink     = GEONKICK_OSC_FUNC_NOISE_PINK,
           NoiseBrownian = GEONKICK_OSC_FUNC_NOISE_BROWNIAN,
-          Unknown       = GEONKICK_OSC_FUNC_UNKNOWN
+          Sample        = GEONKICK_OSC_FUNC_SAMPLE,
   };
 
   enum class EnvelopeType:int {
@@ -88,8 +88,11 @@ class GeonkickApi {
                                     EnvelopeType envelope,
                                     int pointIndex,
                                     const RkRealPoint &point);
-  GeonkickApi::FunctionType oscillatorFunction(int oscillatorIndex) const;
+  FunctionType oscillatorFunction(int oscillatorIndex) const;
   gkick_real oscillatorPhase(int oscillatorIndex) const;
+  void setOscillatorSample(const std::string &file, int oscillatorIndex);
+  void setOscillatorSample(const std::vector<float> &sample, int oscillatorIndex);
+  std::vector<float> getOscillatorSample(int oscillatorIndex) const;
   double kickMaxLength(void) const;
   double kickLength(void) const;
   double kickAmplitude() const;
@@ -148,7 +151,7 @@ class GeonkickApi {
   void setState(const std::shared_ptr<GeonkickState> &state);
   void setState(const std::string &data);
   void setKickEnvelopePoints(EnvelopeType envelope, const std::vector<RkRealPoint> &points);
-  void setKeyPressed(bool b, int velocity);
+  void setKeyPressed(bool b, int note, int velocity);
   void enableCompressor(bool enable);
   void setCompressorAttack(double attack);
   void setCompressorRelease(double release);
@@ -171,6 +174,8 @@ class GeonkickApi {
   double getLimiterLevelerValue() const;
   std::filesystem::path currentWorkingPath(const std::string &key) const;
   void setCurrentWorkingPath(const std::string &key, const std::filesystem::path &path);
+  void tuneAudioOutput(bool tune);
+  bool isAudioOutputTuned() const;
 
   RK_DECL_ACT(kickLengthUpdated, kickLengthUpdated(double val), RK_ARG_TYPE(double), RK_ARG_VAL(val));
   RK_DECL_ACT(kickAmplitudeUpdated, kickAmplitudeUpdated(double val), RK_ARG_TYPE(double), RK_ARG_VAL(val));
@@ -182,9 +187,10 @@ class GeonkickApi {
   RK_DECL_ACT(currentPlayingFrameVal,
               currentPlayingFrameVal(double val),
               RK_ARG_TYPE(double), RK_ARG_VAL(val));
+  RK_DECL_ACT(stateChanged, stateChanged(), RK_ARG_TYPE(), RK_ARG_VAL());
 
-   void setSettings(const std::string &key, const std::string &value);
-   std::string getSettings(const std::string &key) const;
+  void setSettings(const std::string &key, const std::string &value);
+  std::string getSettings(const std::string &key) const;
 
 protected:
   static void kickUpdatedCallback(void *arg, gkick_real *buff, size_t size);
@@ -197,6 +203,10 @@ protected:
                           OscillatorType osc,
                           const std::shared_ptr<GeonkickState> &state);
   void setLimiterVal(double val);
+  static std::vector<gkick_real> loadSample(const std::string &file,
+                                            double length = 4.0,
+                                            int smapleRate = 48000,
+                                            int channels = 1);
 
 private:
   struct geonkick *geonkickApi;

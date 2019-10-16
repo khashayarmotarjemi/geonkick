@@ -49,7 +49,7 @@ typedef float gkick_real;
 
 #define GEONKICK_UNUSED(expr) (void)expr
 
-#define GEONKICK_API_VERSION 0x010802
+#define GEONKICK_API_VERSION 0x010900
 #define GEONKICK_API_NAME "Geonkick"
 
 enum geonkick_error {
@@ -85,7 +85,7 @@ enum geonkick_osc_func_type {
         GEONKICK_OSC_FUNC_NOISE_WHITE    = 4,
         GEONKICK_OSC_FUNC_NOISE_PINK     = 5,
         GEONKICK_OSC_FUNC_NOISE_BROWNIAN = 6,
-        GEONKICK_OSC_FUNC_UNKNOWN        = 7
+        GEONKICK_OSC_FUNC_SAMPLE         = 7
 };
 
 enum GEONKICK_MODULE {
@@ -269,7 +269,10 @@ geonkick_get_osc_frequency(struct geonkick *kick,
                            gkick_real *v);
 
 enum geonkick_error
-geonkick_key_pressed(struct geonkick *kick, int pressed, int velocity);
+geonkick_key_pressed(struct geonkick *kick,
+                     bool pressed,
+                     int note,
+                     int velocity);
 
 enum geonkick_error
 geonkick_get_kick_buffer_size(struct geonkick *kick, size_t *size);
@@ -413,6 +416,24 @@ geonkick_group_set_amplitude(struct geonkick *kick, size_t index, gkick_real amp
 
 enum geonkick_error
 geonkick_group_get_amplitude(struct geonkick *kick, size_t index, gkick_real *amplitude);
+
+enum geonkick_error
+geonkick_tune_audio_output(struct geonkick *kick, bool tune);
+
+enum geonkick_error
+geonkick_is_audio_output_tuned(struct geonkick *kick, bool *tune);
+
+enum geonkick_error
+geonkick_set_osc_sample(struct geonkick *kick,
+                        size_t osc_index,
+                        const gkick_real *data,
+                        size_t size);
+
+enum geonkick_error
+geonkick_get_osc_sample(struct geonkick *kick,
+                        size_t osc_index,
+                        gkick_real **data,
+                        size_t *size);
 
 #ifdef __cplusplus
 }

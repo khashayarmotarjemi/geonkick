@@ -22,6 +22,7 @@
  */
 
 #include "geonkick_state.h"
+#include "base64.h"
 
 #include <iomanip>
 
@@ -38,6 +39,7 @@ GeonkickState::GeonkickState() :
         , layers{false, false, false}
         , layersAmplitude{1.0, 1.0, 1.0}
         , currentLayer{GeonkickApi::Layer::Layer1}
+        , tunedOutput{false}
 {
         initOscillators();
 }
@@ -87,6 +89,9 @@ void GeonkickState::parseKickObject(const rapidjson::Value &kick)
         for (const auto &m: kick.GetObject()) {
                 if (m.name == "limiter" && m.value.IsDouble())
                         setLimiterValue(m.value.GetDouble());
+
+                if (m.name == "tuned_output" && m.value.IsBool())
+                        tuneOutput(m.value.GetBool());
 
                 if (m.name == "layers" && m.value.IsArray()) {
                         layers = {false, false, false};
@@ -179,6 +184,8 @@ void GeonkickState::parseOscillatorObject(int index,  const rapidjson::Value &os
                         setOscillatorEnabled(index, m.value.GetBool());
                 if (m.name == "is_fm" && m.value.IsBool())
                         setOscillatorAsFm(index, m.value.GetBool());
+                if (m.name == "sample" && m.value.IsString())
+                        setOscillatorSample(index, fromBase64F(std::string(m.value.GetString())));
                 if (m.name == "function" && m.value.IsInt())
                         setOscillatorFunction(index, static_cast<GeonkickApi::FunctionType>(m.value.GetInt()));
                 if (m.name == "phase" && m.value.IsDouble())
@@ -630,6 +637,8 @@ void GeonkickState::oscJson(std::ostringstream &jsonStream) const
                 jsonStream << "\"osc" << val.first << "\": {" << std::endl;
                 jsonStream << "\"enabled\": " << (val.second->isEnabled ? "true" : "false") << ", " << std::endl;
                 jsonStream << "\"is_fm\": " << (val.second->isFm ? "true" : "false") << ", " << std::endl;
+                if (val.second->function == GeonkickApi::FunctionType::Sample && !val.second->sample.empty())
+                        jsonStream <<  "\"sample\": \"" << toBase64F(val.second->sample) << "\"," << std::endl;
                 jsonStream <<  "\"function\": " << static_cast<int>(val.second->function) << "," << std::endl;
                 jsonStream <<  "\"phase\": " << std::fixed << std::setprecision(5) << val.second->phase << ", " << std::endl;
                 jsonStream << "\"ampl_env\": {" << std::endl;
@@ -712,6 +721,7 @@ void GeonkickState::kickJson(std::ostringstream &jsonStream) const
         jsonStream << "]," << std::endl;
 
         jsonStream << "\"limiter\": " << std::fixed << std::setprecision(5) << getLimiterValue() << ", " << std::endl;
+        jsonStream << "\"tuned_output\": " << (isOutputTuned() ? "true" : "false") << ", " << std::endl;
         jsonStream << "\"ampl_env\": {" << std::endl;
         jsonStream << "\"amplitude\": " << static_cast<double>(getKickAmplitude()) << ", " << std::endl;
         jsonStream << "\"length\": " << static_cast<double>(getKickLength()) << ", " << std::endl;
@@ -802,3 +812,52 @@ double GeonkickState::getLayerAmplitude(GeonkickApi::Layer layer) const
         return 0;
 }
 
+void GeonkickState::tuneOutput(bool tune)
+{
+        tunedOutput = tune;
+}
+
+bool GeonkickState::isOutputTuned() const
+{
+        return tunedOutput;
+}
+
+std::vector<float> GeonkickState::fromBase64F(const std::string &str)
+{
+        size_t len;
+        auto data_str = base64_decode(reinterpret_cast<const unsigned char*>(str.c_str()), str.size(), &len);
+        if (data_str && len > sizeof(float)) {
+                std::vector<float> data(reinterpret_cast<float*>(data_str),
+                                        reinterpret_cast<float*>(data_str) + len / sizeof(float));
+                free(data_str);
+                return data;
+        }
+        return {};
+}
+
+std::string GeonkickState::toBase64F(const std::vector<float> &data)
+{
+        size_t len;
+        auto base64 = base64_encode(reinterpret_cast<const unsigned char*>(data.data()),
+                                    data.size() * sizeof(float), &len);
+        if (base64  && len > 0) {
+                auto str = std::move(std::string(reinterpret_cast<const char*>(base64), len));
+                free(base64);
+                str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+                return str;
+        }
+        return {};
+}
+
+void GeonkickState::setOscillatorSample(int oscillatorIndex, const std::vector<float> &sample)
+{
+        auto oscillator = getOscillator(oscillatorIndex);
+        if (oscillator)
+                oscillator->sample = sample;
+}
+
+std::vector<float> GeonkickState::getOscillatorSample(int oscillatorIndex) const
+{
+        auto oscillator = getOscillator(oscillatorIndex);
+        return oscillator->sample;
+}

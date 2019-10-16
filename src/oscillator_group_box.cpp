@@ -28,6 +28,7 @@
 #include "knob.h"
 #include "geonkick_slider.h"
 #include "filter.h"
+#include "file_dialog.h"
 
 #include <RkLabel.h>
 
@@ -48,7 +49,10 @@ extern const unsigned char rk_wave_button_triangle_png[];
 extern const unsigned char rk_wave_button_triangle_active_png[];
 extern const unsigned char rk_wave_button_sawtooth_png[];
 extern const unsigned char rk_phase_label_png[];
+extern const unsigned char rk_wave_button_sample_png[];
+extern const unsigned char rk_wave_button_sample_active_png[];
 extern const unsigned char rk_wave_button_sawtooth_active_png[];
+extern const unsigned char rk_button_browse_sample_png[];
 extern const unsigned char rk_hboxbk_noise_env_png[];
 extern const unsigned char rk_hboxbk_osc_env_png[];
 extern const unsigned char rk_knob_png[];
@@ -68,6 +72,8 @@ OscillatorGroupBox::OscillatorGroupBox(GeonkickWidget *parent, Oscillator *osc)
            , squareButton{nullptr}
            , triangleButton{nullptr}
            , sawtoothButton{nullptr}
+           , sampleButton{nullptr}
+           , sampleBrowseButton{nullptr}
            , phaseSlider{nullptr}
            , noiseWhiteButton{nullptr}
            , noiseBrownianButton{nullptr}
@@ -126,7 +132,7 @@ void OscillatorGroupBox::createWaveFunctionGroupBox()
         sineButton = new GeonkickButton(waveFunctionHBox);
         sineButton->setBackgroundColor(waveFunctionHBox->background());
         sineButton->setFixedSize(67, 14);
-        sineButton->setPosition(24, 25);
+        sineButton->setPosition(20, 25);
         sineButton->setUnpressedImage(RkImage(sineButton->size(), rk_wave_button_sine_png));
         sineButton->setPressedImage(RkImage(sineButton->size(), rk_wave_button_sine_active_png));
         RK_ACT_BIND(sineButton, toggled, RK_ACT_ARGS(bool b), this, setSineWave(b));
@@ -144,7 +150,7 @@ void OscillatorGroupBox::createWaveFunctionGroupBox()
         triangleButton = new GeonkickButton(waveFunctionHBox);
         triangleButton->setBackgroundColor(waveFunctionHBox->background());
         triangleButton->setFixedSize(67, 14);
-        triangleButton->setPosition(sineButton->x() + 100, sineButton->y());
+        triangleButton->setPosition(sineButton->x() + 60, sineButton->y());
         triangleButton->setUnpressedImage(RkImage(triangleButton->size(), rk_wave_button_triangle_png));
         triangleButton->setPressedImage(RkImage(triangleButton->size(), rk_wave_button_triangle_active_png));
         RK_ACT_BIND(triangleButton, toggled, RK_ACT_ARGS(bool b), this, setTriangleWave(b));
@@ -153,11 +159,27 @@ void OscillatorGroupBox::createWaveFunctionGroupBox()
         sawtoothButton = new GeonkickButton(waveFunctionHBox);
         sawtoothButton->setBackgroundColor(waveFunctionHBox->background());
         sawtoothButton->setSize(67, 14);
-        sawtoothButton->setPosition(sineButton->x() + 100, sineButton->y() + sineButton->height() + 5);
+        sawtoothButton->setPosition(sineButton->x() + 60, sineButton->y() + sineButton->height() + 5);
         sawtoothButton->setUnpressedImage(RkImage(sawtoothButton->size(), rk_wave_button_sawtooth_png));
         sawtoothButton->setPressedImage(RkImage(sawtoothButton->size(), rk_wave_button_sawtooth_active_png));
         RK_ACT_BIND(sawtoothButton, toggled, RK_ACT_ARGS(bool b), this, setSawtoothWave(b));
         sawtoothButton->show();
+
+        sampleButton = new GeonkickButton(waveFunctionHBox);
+        sampleButton->setBackgroundColor(waveFunctionHBox->background());
+        sampleButton->setFixedSize(67, 14);
+        sampleButton->setPosition(triangleButton->x() + 73, triangleButton->y());
+        sampleButton->setUnpressedImage(RkImage(sampleButton->size(), rk_wave_button_sample_png));
+        sampleButton->setPressedImage(RkImage(sampleButton->size(), rk_wave_button_sample_active_png));
+        RK_ACT_BIND(sampleButton, toggled, RK_ACT_ARGS(bool b), this, setSampleFunction(b));
+
+        sampleBrowseButton = new GeonkickButton(waveFunctionHBox);
+        sampleBrowseButton->setCheckable(true);
+        sampleBrowseButton->setBackgroundColor(waveFunctionHBox->background());
+        sampleBrowseButton->setFixedSize(67, 14);
+        sampleBrowseButton->setPosition(triangleButton->x() + 73, sampleButton->y() + sampleButton->height() + 5);
+        sampleBrowseButton->setUnpressedImage(RkImage(sampleBrowseButton->size(), rk_button_browse_sample_png));
+        RK_ACT_BIND(sampleBrowseButton, toggled, RK_ACT_ARGS(bool b), this, browseSample());
 
         auto phaseLabel = new RkLabel(waveFunctionHBox);
         phaseLabel->setFixedSize(30, 8);
@@ -167,7 +189,7 @@ void OscillatorGroupBox::createWaveFunctionGroupBox()
         phaseLabel->show();
 
         phaseSlider = new GeonkickSlider(waveFunctionHBox);
-        phaseSlider->setFixedSize(140, 8);
+        phaseSlider->setFixedSize(150, 8);
         phaseSlider->onSetValue(50);
         phaseSlider->setPosition(phaseLabel->x() + phaseLabel->width() + 5, phaseLabel->y() + 1);
         phaseSlider->show();
@@ -248,6 +270,7 @@ void OscillatorGroupBox::setSineWave(bool pressed)
                 squareButton->setPressed(false);
                 triangleButton->setPressed(false);
                 sawtoothButton->setPressed(false);
+                sampleButton->setPressed(false);
                 oscillator->setFunction(Oscillator::FunctionType::Sine);
         }
 }
@@ -258,6 +281,7 @@ void OscillatorGroupBox::setSquareWave(bool pressed)
                 sineButton->setPressed(false);
                 triangleButton->setPressed(false);
                 sawtoothButton->setPressed(false);
+                sampleButton->setPressed(false);
                 oscillator->setFunction(Oscillator::FunctionType::Square);
         }
 }
@@ -268,6 +292,7 @@ void OscillatorGroupBox::setTriangleWave(bool pressed)
                 sineButton->setPressed(false);
                 squareButton->setPressed(false);
                 sawtoothButton->setPressed(false);
+                sampleButton->setPressed(false);
                 oscillator->setFunction(Oscillator::FunctionType::Triangle);
         }
 }
@@ -278,7 +303,19 @@ void OscillatorGroupBox::setSawtoothWave(bool pressed)
                 sineButton->setPressed(false);
                 squareButton->setPressed(false);
                 triangleButton->setPressed(false);
+                sampleButton->setPressed(false);
                 oscillator->setFunction(Oscillator::FunctionType::Sawtooth);
+        }
+}
+
+void OscillatorGroupBox::setSampleFunction(bool pressed)
+{
+        if (pressed) {
+                sineButton->setPressed(false);
+                squareButton->setPressed(false);
+                triangleButton->setPressed(false);
+                sawtoothButton->setPressed(false);
+                oscillator->setFunction(Oscillator::FunctionType::Sample);
         }
 }
 
@@ -321,18 +358,11 @@ void OscillatorGroupBox::updateGui()
                 else
                         noiseBrownianButton->setPressed(true);
         } else {
-                sineButton->setPressed(false);
-                squareButton->setPressed(false);
-                triangleButton->setPressed(false);
-                sawtoothButton->setPressed(false);
-                if (oscillator->function() == Oscillator::FunctionType::Sine)
-                        sineButton->setPressed(true);
-                else if (oscillator->function() == Oscillator::FunctionType::Square)
-                        squareButton->setPressed(true);
-                else if (oscillator->function() == Oscillator::FunctionType::Triangle)
-                        triangleButton->setPressed(true);
-                else if (oscillator->function() == Oscillator::FunctionType::Sawtooth)
-                        sawtoothButton->setPressed(true);
+                sineButton->setPressed(oscillator->function() == Oscillator::FunctionType::Sine);
+                squareButton->setPressed(oscillator->function() == Oscillator::FunctionType::Square);
+                triangleButton->setPressed(oscillator->function() == Oscillator::FunctionType::Triangle);
+                sawtoothButton->setPressed(oscillator->function() == Oscillator::FunctionType::Sawtooth);
+                sampleButton->setPressed(oscillator->function() == Oscillator::FunctionType::Sample);
                 phaseSlider->onSetValue(100 * oscillator->getPhase() / (2 * M_PI));
         }
 
@@ -347,4 +377,12 @@ void OscillatorGroupBox::updateGui()
         filterBox->setResonance(oscillator->filterQFactor());
         filterBox->setCutOff(oscillator->filterFrequency());
         filterBox->setType(oscillator->filter());
+}
+
+void OscillatorGroupBox::browseSample()
+{
+        auto fileDialog = new FileDialog(this, FileDialog::Type::Open, "Select sample");
+        fileDialog->setFilters({".wav", ".WAV", ".flac", ".FLAC", ".ogg", ".OGG"});
+        fileDialog->setCurrentDirectoy(oscillator->samplesPath());
+        RK_ACT_BIND(fileDialog, selectedFile, RK_ACT_ARGS(const std::string &file), oscillator, setSample(file));
 }

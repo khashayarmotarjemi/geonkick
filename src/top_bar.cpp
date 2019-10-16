@@ -40,6 +40,8 @@ extern const unsigned char rk_topbar_layer3_png[];
 extern const unsigned char rk_topbar_layer1_disabled_png[];
 extern const unsigned char rk_topbar_layer2_disabled_png[];
 extern const unsigned char rk_topbar_layer3_disabled_png[];
+extern const unsigned char rk_tune_checkbox_on_png[];
+extern const unsigned char rk_tune_checkbox_off_png[];
 
 TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         : GeonkickWidget(parent)
@@ -52,6 +54,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         , layer3Button{nullptr}
         , geonkickApi{api}
         , presetBrowserModel{nullptr}
+        , tuneCheckbox{nullptr}
 {
         setFixedWidth(parent->width());
         setFixedHeight(40);
@@ -97,6 +100,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         aboutButton->setCheckable(true);
         RK_ACT_BIND(aboutButton, toggled, RK_ACT_ARGS(bool b), this, openAbout());
 
+<<<<<<< HEAD
         presetBrowserModel = std::make_unique<PresetBrowserModel>(geonkickApi, parent->eventQueue());
 
         auto presetNavigator = new PresetNavigator(this, presetBrowserModel.get());
@@ -106,8 +110,30 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         presetNavigator->setSize(235, 30);
         RK_ACT_BIND(presetNavigator, openPresetBrowser,
                     RK_ACT_ARGS(), this, openPresetBrowser());
+=======
+        presetNameLabel = new RkLabel(this);
+        presetNameLabel->setBackgroundColor(background());
+        presetNameLabel->setTextColor({210, 226, 226, 140});
+        auto font = presetNameLabel->font();
+        font.setSize(12);
+        presetNameLabel->setFont(font);
+        presetNameLabel->setSize(250, 30);
+        presetNameLabel->setPosition(aboutButton->x() + aboutButton->width() + 5,
+                                     (height() - presetNameLabel->height()) / 2);
+        presetNameLabel->show();
+>>>>>>> release/v1.10
 
         createLyersButtons();
+
+        tuneCheckbox = new GeonkickButton(this);
+        tuneCheckbox->setCheckable(true);
+        tuneCheckbox->setFixedSize(46, 11);
+        tuneCheckbox->setPosition(width() - tuneCheckbox->width() - 30, (height() - tuneCheckbox->height()) / 2);
+        tuneCheckbox->setPressedImage(RkImage(tuneCheckbox->size(), rk_tune_checkbox_on_png));
+        tuneCheckbox->setUnpressedImage(RkImage(tuneCheckbox->size(), rk_tune_checkbox_off_png));
+        tuneCheckbox->show();
+        RK_ACT_BIND(tuneCheckbox, toggled, RK_ACT_ARGS(bool b), geonkickApi, tuneAudioOutput(b));
+
         updateGui();
 }
 
@@ -168,6 +194,7 @@ void TopBar::updateGui()
         layer1Button->setPressed(geonkickApi->isLayerEnabled(GeonkickApi::Layer::Layer1));
         layer2Button->setPressed(geonkickApi->isLayerEnabled(GeonkickApi::Layer::Layer2));
         layer3Button->setPressed(geonkickApi->isLayerEnabled(GeonkickApi::Layer::Layer3));
+        tuneCheckbox->setPressed(geonkickApi->isAudioOutputTuned());
 }
 
 void TopBar::openPresetBrowser()

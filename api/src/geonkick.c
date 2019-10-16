@@ -505,13 +505,16 @@ geonkick_get_osc_frequency(struct geonkick *kick,
 }
 
 enum geonkick_error
-geonkick_key_pressed(struct geonkick *kick, int pressed, int velocity)
+geonkick_key_pressed(struct geonkick *kick,
+                     bool pressed,
+                     int note,
+                     int velocity)
 {
         if (kick == NULL) {
                 gkick_log_error("wrong arugments");
                 return GEONKICK_ERROR;
         }
-        return gkick_audio_key_pressed(kick->audio, pressed, velocity);
+        return gkick_audio_key_pressed(kick->audio, pressed, note, velocity);
 }
 
 enum geonkick_error
@@ -972,3 +975,67 @@ geonkick_group_get_amplitude(struct geonkick *kick, size_t index, gkick_real *am
 
         return geonkick_synth_group_get_amplitude(kick->synth, index, amplitude);
 }
+
+enum geonkick_error
+geonkick_tune_audio_output(struct geonkick *kick, bool tune)
+{
+        if (kick == NULL) {
+                gkick_log_error("wrong arguments");
+                return GEONKICK_ERROR;
+        }
+
+        if (kick->audio == NULL || kick->audio->audio_output == NULL) {
+                gkick_log_error("audio output was not created");
+                return GEONKICK_ERROR;
+        }
+
+        gkick_audio_tune_output(kick->audio->audio_output, tune);
+        return GEONKICK_OK;
+}
+
+enum geonkick_error
+geonkick_is_audio_output_tuned(struct geonkick *kick, bool *tune)
+{
+        if (kick == NULL || tune == NULL) {
+                gkick_log_error("wrong arguments");
+                return GEONKICK_ERROR;
+        }
+
+        if (kick->audio == NULL || kick->audio->audio_output == NULL) {
+                gkick_log_error("audio output was not created");
+                return GEONKICK_ERROR;
+        } else {
+                *tune = gkick_audio_is_tune_output(kick->audio->audio_output);
+        }
+
+        return GEONKICK_OK;
+}
+
+enum geonkick_error
+geonkick_set_osc_sample(struct geonkick *kick,
+                        size_t osc_index,
+                        const gkick_real *data,
+                        size_t size)
+{
+        if (kick == NULL || data == NULL || size < 1) {
+                gkick_log_error("wrong arguments");
+                return GEONKICK_ERROR;
+        }
+
+        return geonkick_synth_set_osc_sample(kick->synth, osc_index, data, size);
+}
+
+enum geonkick_error
+geonkick_get_osc_sample(struct geonkick *kick,
+                        size_t osc_index,
+                        gkick_real **data,
+                        size_t *size)
+{
+        if (kick == NULL || data == NULL || size == NULL) {
+                gkick_log_error("wrong arguments");
+                return GEONKICK_ERROR;
+        }
+
+        return geonkick_synth_get_osc_sample(kick->synth, osc_index, data, size);
+}
+

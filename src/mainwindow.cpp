@@ -65,6 +65,7 @@ MainWindow::MainWindow(RkMain *app, GeonkickApi *api, const RkNativeWindowInfo &
         setFixedSize(940, 760);
         setTitle(GEOKICK_APP_NAME);
         geonkickApi->registerCallbacks(true);
+        RK_ACT_BIND(geonkickApi, stateChanged, RK_ACT_ARGS(), this, updateGui());
         show();
 }
 
@@ -73,13 +74,14 @@ MainWindow::~MainWindow()
         if (geonkickApi) {
                 geonkickApi->registerCallbacks(false);
                 geonkickApi->setEventQueue(nullptr);
-                // Since for plugins the api is not destroyed there
-                // is a need to unbind from the GUI that is being detryied.
+                // Since for plugins the DSP/api is not destroyed there
+                // is a need to unbind from the GUI that is being destroyed.
                 RK_ACT_UNBIND_ALL(geonkickApi, kickLengthUpdated);
                 RK_ACT_UNBIND_ALL(geonkickApi, kickAmplitudeUpdated);
                 RK_ACT_UNBIND_ALL(geonkickApi, kickUpdated);
                 RK_ACT_UNBIND_ALL(geonkickApi, newKickBuffer);
                 RK_ACT_UNBIND_ALL(geonkickApi, currentPlayingFrameVal);
+                RK_ACT_UNBIND_ALL(geonkickApi, stateChanged);
                 if (geonkickApi->isStandalone())
                         delete geonkickApi;
         }
@@ -210,6 +212,7 @@ void MainWindow::openPreset(const std::string &fileName)
 void MainWindow::openFileDialog(FileDialog::Type type)
 {
         auto fileDialog = new FileDialog(this, type, type == FileDialog::Type::Open ? "Open Preset" : "Save Preset");
+        fileDialog->setFilters({".gkick", ".GKICK"});
         if (type == FileDialog::Type::Open) {
                 fileDialog->setCurrentDirectoy(geonkickApi->currentWorkingPath("OpenPreset"));
                 RK_ACT_BIND(fileDialog, selectedFile, RK_ACT_ARGS(const std::string &file), this, openPreset(file));
@@ -227,7 +230,9 @@ void MainWindow::openAboutDialog()
 void MainWindow::keyPressEvent(const std::shared_ptr<RkKeyEvent> &event)
 {
         if (event->key() == Rk::Key::Key_k || event->key() == Rk::Key::Key_K) {
-                geonkickApi->setKeyPressed(true, 127);
+                /* Key press: note number A4, velocity maximum. */
+                // geonkickApi->setKeyPressed(true, 69, 127); TODO: make this call thread-safe.
+                // for now this function is called only from the audio thread.
         } else if (event->modifiers() & static_cast<int>(Rk::KeyModifiers::Control)
                    && (event->key() == Rk::Key::Key_r || event->key() == Rk::Key::Key_R)) {
                 geonkickApi->setState(geonkickApi->getDefaultState());

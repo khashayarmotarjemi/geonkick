@@ -37,6 +37,7 @@ gkick_audio_output_create(struct gkick_audio_output **audio_output)
                 return GEONKICK_ERROR;
         }
         memset(*audio_output, 0, sizeof(struct gkick_audio_output));
+        (*audio_output)->decay = -1;
 
         gkick_buffer_new((struct gkick_buffer**)&(*audio_output)->updated_buffer, GEONKICK_MAX_KICK_BUFFER_SIZE);
         if ((*audio_output)->updated_buffer == NULL) {
@@ -78,18 +79,24 @@ void gkick_audio_output_free(struct gkick_audio_output **audio_output)
 
 enum geonkick_error
 gkick_audio_output_key_pressed(struct gkick_audio_output *audio_output,
-                               enum gkick_key_state pressed,
-                               int velocity)
+                               struct gkick_note_info *key)
 {
-        audio_output->key_state = pressed;
-        if (audio_output->key_state == GKICK_KEY_STATE_PRESSED) {
+        if (key->state == GKICK_KEY_STATE_PRESSED) {
+                audio_output->key = *key;
                 audio_output->is_play = true;
-                audio_output->key_velocity = velocity;
                 gkick_audio_swap_buffers(audio_output);
         } else {
                 audio_output->decay = GEKICK_KEY_RELESE_DECAY_TIME;
+                audio_output->key.state = key->state;
         }
+
         return GEONKICK_OK;
+}
+
+gkick_real
+gkick_audio_output_tune_factor(int note_number)
+{
+        return pow(2.0, (gkick_real)(note_number - 69) / 12.0);
 }
 
 /**
@@ -108,14 +115,25 @@ gkick_audio_output_get_frame(struct gkick_audio_output *audio_output, gkick_real
                 if (gkick_buffer_is_end((struct gkick_buffer*)audio_output->playing_buffer)) {
                         audio_output->is_play = false;
                 } else {
-                        *val = gkick_buffer_get_next((struct gkick_buffer*)audio_output->playing_buffer);
-                        if (audio_output->key_state == GKICK_KEY_STATE_RELEASED)
+                        struct gkick_buffer *buff = (struct gkick_buffer*)audio_output->playing_buffer;
+                        gkick_real factor = gkick_audio_output_tune_factor(audio_output->key.note_number);
+                        if (audio_output->tune)
+                                *val = gkick_buffer_stretch_get_next(buff, factor);
+                        else
+                                *val = gkick_buffer_get_next(buff);
+
+                        if (gkick_buffer_size(buff) - gkick_buffer_index(buff) == GEKICK_KEY_RELESE_DECAY_TIME) {
+                                audio_output->decay = GEKICK_KEY_RELESE_DECAY_TIME;
+                                audio_output->key.state = GKICK_KEY_STATE_RELEASED;
+                        }
+
+                        if (audio_output->key.state == GKICK_KEY_STATE_RELEASED)
                                 decay_val = - 1.0 * ((gkick_real)(release_time - audio_output->decay) / release_time) + 1.0;
                         else
                                 decay_val = 1.0;
-                        *val *= decay_val * ((gkick_real)audio_output->key_velocity / 127);
+                        *val *= decay_val * ((gkick_real)audio_output->key.velocity / 127);
 
-                        if (audio_output->key_state == GKICK_KEY_STATE_RELEASED) {
+                        if (audio_output->key.state == GKICK_KEY_STATE_RELEASED) {
                                 audio_output->decay--;
                                 if (audio_output->decay < 0)
                                         audio_output->is_play = false;
@@ -199,4 +217,14 @@ void gkick_audio_swap_buffers(struct gkick_audio_output *audio_output)
                 gkick_buffer_reset((struct gkick_buffer*)audio_output->playing_buffer);
                 gkick_audio_output_unlock(audio_output);
         }
+}
+
+void gkick_audio_tune_output(struct gkick_audio_output *audio_output, bool tune)
+{
+        audio_output->tune = tune;
+}
+
+bool gkick_audio_is_tune_output(struct gkick_audio_output *audio_output)
+{
+        return audio_output->tune;
 }

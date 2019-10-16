@@ -5,30 +5,30 @@ Geonkick - a [free software](https://www.gnu.org/philosophy/free-sw.en.html) per
 Geonkick is a synthesizer that can synthesize elements
 of percussion. The most basic examples are: kicks,
 snares, hit-hats, shakers, claps, sticks.
+Also, it can play and mix samples.
 
 License: GPLv3
 
-Version: 1.8
+Version: 1.9.0
 
 Author: Iurie Nistor
 
 Source code repository:
 
-* https://gitlab.com/iurie/geonkick
-* https://github.com/iurienistor/geonkick
+https://gitlab.com/geontime/geonkick
 
-Latest releases can be found on [tags](https://github.com/iurienistor/geonkick/tags).
+Latest releases can be found on [tags](https://gitlab.com/geontime/geonkick/-/tags).
 
-Latest stable features added are on ["master" branch](https://github.com/iurienistor/geonkick/commits/master)
+Latest stable features added are on ["master" branch](https://gitlab.com/geontime/geonkick/commits/master)
 
-The development is going on ["develop" branch](https://github.com/iurienistor/geonkick/commits/develop)
-or feature (feat/feature_name) branches
+The development is going on ["develop" branch](https://gitlab.com/geontime/geonkick/commits/develop)
+or feature (feat/feature_name) branches.
 
 ![Screenshot](data/screenshot.png)
 
 #### Download
 
-[Geonkick 64-bit, GNU/Linux, LV2 & standalone](https://github.com/iurienistor/geonkick/releases/download/v1.8.1/geonkick-1.8.1_GNU+Linux_64bit.zip)
+[Geonkick 64-bit, GNU/Linux, LV2 & standalone](https://github.com/geontime/geonkick/releases/download/v1.9.0/geonkick-1.9.0_GNU+Linux_64bit.zip)
 
 #### Features
 
@@ -36,7 +36,7 @@ or feature (feat/feature_name) branches
 * 3 layers
 * Layers Mixer
 * 2 oscillators per layer
-     - sine, square, triangle, saw-tooth
+     - sine, square, triangle, saw-tooth, sample (wav, ogg, flac)
      - initial phase control
      - amplitude & frequency envelope
      - low, band and high pass filter, cutoff envelope
@@ -62,6 +62,7 @@ or feature (feat/feature_name) branches
      - Ogg Vorbis
 * Open & Save preset in JSON format
 * Standalone
+* Pitch to note (see below technical notes)
 * Plugin
   - LV2
 * Platforms:
@@ -92,9 +93,10 @@ Plugin:
 
 ###### Install dependencies
 
-In order to build Geonkick there is a need to install the following development packages:
+In order to build Geonkick there is a need for:
 
-* [Redkite](https://github.com/iurienistor/redkite) GUI toolkit. See the documentation of Redkite toolkit how to install it.
+* C++17
+* [Redkite](https://gitlab.com/geontime/redkite) GUI toolkit. See the documentation of Redkite toolkit how to install it.
 * libsndfile
 * RapidJSON (version >= 1.1)
 * JACK Audio Connection Kit (optional if building only for LV2)
@@ -112,7 +114,7 @@ On Debian, Ubuntu, Ubuntu Studio install:
 
 Clone the code repository, compile and install
 
-        git clone https://github.com/iurienistor/geonkick.git
+        git clone https://gitlab.com/geontime/geonkick.git
         mkdir geonkick/build
         cd geonkick/build
         cmake ../
@@ -135,21 +137,13 @@ Geonkick can be found in the following repositories:
 
 * [ArchLinux](https://www.archlinux.org/packages/community/x86_64/geonkick/) by David Runge
 * [FreeBSD](https://www.freshports.org/audio/geonkick-lv2/) by yuri@FreeBSD.org
-* [OpenSUSE](https://build.opensuse.org/repositories/home:opensuseitalia:daw/geonkick) by Fabio Pesari
-
-#### Road map
-
-Here is a list of planned milestones and issues opened for them,
-dates when will be started and finished.
-
-Milestones: https://github.com/iurienistor/geonkick/milestones
+* [OpenSUSE](https://build.opensuse.org/package/show/home:geekositalia:daw/geonkick) by Fabio Pesari
 
 #### Short user guide
 
 ###### Shortcut Keys
 
 * Ctrl + r - reload default state, clean everything
-* Ctrl + k - play
 * Ctrl + h - hide envelope, only the graph is shown
 * Ctrl + o - open file browser dialog
 * Ctrl + s - open save dialog
@@ -169,7 +163,6 @@ Note: especially when running as plugin be sure the focus to be on the main Geon
 Geonkick standalone uses Jack and will create two audio outputs and one MIDI input.
 If audio outputs are connected there are three ways to play the sound:
    * MIDI input, for example, MIDI keyboard. This also will be key velocity sensitive, i.e. lower velocity corresponds to lower sound volume.
-   * pressing the key 'Ctrl + k'
    * by means of a DAW if used as LV2
 
 #### Other technical notes
@@ -185,8 +178,6 @@ The block diagram of the synthesizer.
 
 * If the sound exceeds the range -1.0 - 1.0, the sound is hard limited to value 1.0 or -1.0. This can also be seen in the percussion graph.
 
-* Compressor and drive are applied per total (compressor is the last one), and there is a need to work with general settings amplitude envelope to make the input right for these two effects. For now it is recommended to use a dedicated drive or compressor instead if the result of using them is not the desired.
-
 * When a key is pressed, there no synthesis is going on, Geonkick plays the generated percussion that is kept in memory. Synthesis takes place only if some controls are changed.
 
 * If the key is released before all the percussion length is played, Geonkick will apply a 30ms linear decay to avoid sharp cut of the sound.
@@ -198,9 +189,11 @@ Oscillator 2 must be enabled in order to see the result in the graph.
 
 * Geonkick is monophonic. Pressing more keys at once will not result in the desired sound or even no sound.
 
-* Geonkick is not sensitive to key pitch. Pressing keys with different pitch will result in the same percussion sound.
-
 * Geonkick does not support multichannel.
+
+* If the option "Tune" is enabled than Geonkick will tune pitch relative to A4.
+  The central note (un-tuned) is A4. If the percussion sound is more like a tone,
+  tuning above A4 may contain unwanted high frequencies.
 
 ### Thank you!
 

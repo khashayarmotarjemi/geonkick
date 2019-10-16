@@ -38,6 +38,7 @@ void gkick_buffer_new(struct gkick_buffer **buffer, int size)
         (*buffer)->max_size = size;
         (*buffer)->size = (*buffer)->max_size;
         (*buffer)->currentIndex = 0;
+        (*buffer)->floatIndex = 0.0f;
 
         (*buffer)->buff = (gkick_real*)malloc(sizeof(gkick_real) * (*buffer)->max_size);
         if ((*buffer)->buff == NULL) {
@@ -60,26 +61,63 @@ void gkick_buffer_free(struct gkick_buffer **buffer)
 void gkick_buffer_reset(struct gkick_buffer *buffer)
 {
         buffer->currentIndex = 0;
+        buffer->floatIndex = 0.0f;
 }
 
-void gkick_buffer_set_data(struct gkick_buffer *buffer, gkick_real *data, size_t size)
+void gkick_buffer_set_data(struct gkick_buffer *buffer, const gkick_real *data, size_t size)
 {
         if (buffer == NULL || data == NULL || size < 1)
                 return;
 
-        if (size <= buffer->max_size) {
-                memcpy(buffer->buff, data, sizeof(gkick_real) * size);
-                buffer->size = size;
-        }
+        if (size > buffer->max_size)
+                size = buffer->max_size;
+        memcpy(buffer->buff, data, sizeof(gkick_real) * size);
+        buffer->size = size;
+
         buffer->currentIndex = 0;
+        buffer->floatIndex = 0.0f;
+}
+
+void gkick_buffer_set_at(struct gkick_buffer *buffer,  size_t index, gkick_real val)
+{
+        if (buffer != NULL && buffer->size > 0 && index >=0 && index < buffer->size)
+                buffer->buff[index] = val;
+}
+
+gkick_real gkick_buffer_get_at(struct gkick_buffer *buffer,  size_t index)
+{
+        if (buffer != NULL && buffer->size > 0 && index >=0 && index < buffer->size)
+                return buffer->buff[index];
+        return 0.0;
 }
 
 gkick_real gkick_buffer_get_next(struct gkick_buffer *buffer)
 {
+        gkick_real val = 0;
+        if (buffer->size > 0 && buffer->currentIndex < buffer->size) {
+                val = buffer->buff[buffer->currentIndex++];
+                buffer->floatIndex = buffer->currentIndex;
+        }
+        return val;
+}
+
+gkick_real gkick_buffer_stretch_get_next(struct gkick_buffer *buffer, gkick_real factor)
+{
         if (buffer->size < 1 || buffer->currentIndex > buffer->size - 1)
                 return 0;
-        else
-                return buffer->buff[buffer->currentIndex++];
+
+        gkick_real val;
+        if (factor < 1.0 && buffer->currentIndex + 1 < buffer->size - 1) {
+                /* Do linear interpolation. */
+                gkick_real k = buffer->buff[buffer->currentIndex + 1] - buffer->buff[buffer->currentIndex];
+                val = k * (buffer->floatIndex - (gkick_real)buffer->currentIndex) + buffer->buff[buffer->currentIndex];
+        } else {
+                val = buffer->buff[buffer->currentIndex];
+        }
+
+        buffer->floatIndex += factor;
+        buffer->currentIndex = buffer->floatIndex + 0.5;
+        return val;
 }
 
 void gkick_buffer_set_size(struct gkick_buffer *buffer, size_t size)
@@ -91,6 +129,12 @@ void gkick_buffer_set_size(struct gkick_buffer *buffer, size_t size)
         else
                 buffer->size = size;
         buffer->currentIndex = 0;
+        buffer->floatIndex = 0.0f;
+}
+
+size_t gkick_buffer_index(struct gkick_buffer *buffer)
+{
+        return buffer->currentIndex;
 }
 
 size_t gkick_buffer_size(struct gkick_buffer *buffer)
@@ -103,10 +147,10 @@ void gkick_buffer_push_back(struct gkick_buffer *buffer, gkick_real val)
         if (buffer->size < 1 || buffer->currentIndex > buffer->size - 1)
                 return;
         buffer->buff[buffer->currentIndex++] = val;
+        buffer->floatIndex = buffer->currentIndex;
 }
 
 bool gkick_buffer_is_end(struct gkick_buffer *buffer)
 {
         return (buffer->size < 1) || (buffer->currentIndex > buffer->size - 1);
 }
-

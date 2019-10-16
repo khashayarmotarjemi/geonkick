@@ -431,4 +431,18 @@ geonkick_synth_group_set_amplitude(struct gkick_synth *synth, size_t index, gkic
 enum geonkick_error
 geonkick_synth_group_get_amplitude(struct gkick_synth *synth, size_t index, gkick_real *amplitude);
 
+enum geonkick_error
+geonkick_synth_set_osc_sample(struct gkick_synth *synth,
+                              size_t osc_index,
+                              const gkick_real *data,
+                              size_t size);
+
+enum geonkick_error
+geonkick_synth_get_osc_sample(struct gkick_synth *synth,
+                              size_t osc_index,
+                              gkick_real **data,
+                              size_t *size);
+
+
+
 #endif // SYNTHESIZER_H
