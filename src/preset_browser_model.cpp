@@ -33,7 +33,7 @@ PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, RkEventQueue *queue)
         , eventQueue{queue}
         , presetBundleIndex{0}
         , presetGroupIndex{0}
-        , presetIndex{0}
+        , presetIndex{-1}
         , bundlesModel{std::make_unique<BundlesModel>(*this)}
         , groupsModel{std::make_unique<GroupsModel>(*this)}
         , presetsModel{std::make_unique<PresetsModel>(*this)}
@@ -162,8 +162,11 @@ bool PresetBrowserModel::loadPresetInfo(const std::unique_ptr<Preset> &preset,
 
 void PresetBrowserModel::setPresetBundle(int index)
 {
-        if (!browserBundles.empty() && index > -1 && index < browserBundles.size())
+        if (!browserBundles.empty() && index > -1 && index < browserBundles.size()) {
                 presetBundleIndex = index;
+                groupsModel->modelChanged();
+                setPresetGroup(-1);
+        }
 }
 
 const PresetBundle* PresetBrowserModel::presetBundle(int index) const
@@ -179,8 +182,11 @@ void PresetBrowserModel::setPresetGroup(int index)
         if (!browserBundles.empty() && presetBundleIndex > -1
             && presetBundleIndex < browserBundles.size()) {
                auto &groups = browserBundles[presetBundleIndex]->groups;
-                if (!groups.empty() && index > -1 && index < groups.size())
+               if (!groups.empty() && index > -1 && index < groups.size()) {
                         presetGroupIndex = index;
+                        presetIndex = -1;
+                        presetsModel->modelChanged();
+               }
         }
 }
 
@@ -202,7 +208,7 @@ void PresetBrowserModel::setPreset(int index)
                 auto &groups = browserBundles[presetBundleIndex]->groups;
                 if (!groups.empty() && presetGroupIndex > -1 && presetGroupIndex < groups.size()) {
                         auto &presets = groups[presetGroupIndex]->presets;
-                        if (!presets.empty() && index > -1 && index < groups.size())
+                        if (!presets.empty() && index > -1 && index < presets.size())
                                 presetIndex = index;
                 }
         }

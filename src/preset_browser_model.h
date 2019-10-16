@@ -95,12 +95,12 @@ class PresetBrowserModel {
 
  private:
 
-        class BundlesModel : public RkModel {
+        class BundlesModel final : public RkModel {
           public:
                 BundlesModel(PresetBrowserModel &parent)
                         : RkModel(parent.eventQueue)
                         , parentModel{parent} {}
-                RkVariant data(int index, DataType type) const final
+                RkVariant data(int index, DataType type) const
                 {
                         const auto bundle = parentModel.presetBundle(index);
                         if (bundle) {
@@ -115,25 +115,31 @@ class PresetBrowserModel {
                         return RkVariant();
                 }
 
-                size_t rows() const final
+                size_t rows() const
                 {
                         return parentModel.browserBundles.size();
                 }
 
-                void selectIndex(int index) final
+                void selectIndex(int index)
                 {
                         parentModel.setPresetBundle(index);
                 }
+
+                int selectedIndex() const
+                {
+                        return parentModel.presetBundleIndex;
+                }
+
           private:
                 PresetBrowserModel &parentModel;
         };
 
-        class GroupsModel : public RkModel {
+        class GroupsModel final : public RkModel {
           public:
                 GroupsModel(PresetBrowserModel& parent)
                         : RkModel(parent.eventQueue)
                         , parentModel{parent} {}
-                RkVariant data(int index, DataType type) const final
+                RkVariant data(int index, DataType type) const
                 {
                         const auto group = parentModel.presetGroup(index);
                         if (group) {
@@ -147,7 +153,7 @@ class PresetBrowserModel {
                         return RkVariant();
                 }
 
-                size_t rows() const final
+                size_t rows() const
                 {
                         const auto bundle = parentModel.presetBundle(parentModel.presetBundleIndex);
                         if (bundle)
@@ -155,21 +161,26 @@ class PresetBrowserModel {
                         return 0;
                 }
 
-                void selectIndex(int index) final
+                void selectIndex(int index)
                 {
                         parentModel.setPresetGroup(index);
+                }
+
+                int selectedIndex() const
+                {
+                        return parentModel.presetGroupIndex;
                 }
 
           private:
                 PresetBrowserModel& parentModel;
         };
 
-        class PresetsModel : public RkModel {
+        class PresetsModel final : public RkModel {
           public:
                 PresetsModel(PresetBrowserModel &parent)
                         : RkModel(parent.eventQueue)
                         , parentModel{parent} {}
-                RkVariant data(int index, DataType type) const final
+                RkVariant data(int index, DataType type) const
                 {
                         const auto preset = parentModel.getPreset(index);
                         if (preset) {
@@ -183,7 +194,7 @@ class PresetBrowserModel {
                         return RkVariant();
                 }
 
-                size_t rows() const final
+                size_t rows() const
                 {
                         const auto group = parentModel.presetGroup(parentModel.presetGroupIndex);
                         if (group)
@@ -191,10 +202,16 @@ class PresetBrowserModel {
                         return 0;
                 }
 
-                void selectIndex(int index) final
+                void selectIndex(int index)
                 {
-                        parentModel.selectPreset(index);
+                        parentModel.setPreset(index);
                 }
+
+                int selectedIndex() const
+                {
+                        return parentModel.presetIndex;
+                }
+
           private:
                 PresetBrowserModel &parentModel;
         };
