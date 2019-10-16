@@ -93,8 +93,9 @@ Plugin:
 
 ###### Install dependencies
 
-In order to build Geonkick there is a need to install the following development packages:
+In order to build Geonkick there is a need for:
 
+* C++17
 * [Redkite](https://gitlab.com/geontime/redkite) GUI toolkit. See the documentation of Redkite toolkit how to install it.
 * libsndfile
 * RapidJSON (version >= 1.1)
