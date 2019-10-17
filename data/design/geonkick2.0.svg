@@ -4301,32 +4301,6 @@
     <filter
        inkscape:collect="always"
        style="color-interpolation-filters:sRGB"
-       id="filter10330-7-2-56-3-4-0-9-0-1-7-9-1"
-       x="-0.013693905"
-       width="1.0273879"
-       y="-0.021728534"
-       height="1.0434572">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="0.23845105"
-         id="feGaussianBlur10332-3-1-3-6-7-3-3-7-0-59-3-2" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
-       id="filter10330-7-2-56-3-4-0-9-0-1-7-9-3"
-       x="-0.013693905"
-       width="1.0273879"
-       y="-0.021728534"
-       height="1.0434572">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="0.23845105"
-         id="feGaussianBlur10332-3-1-3-6-7-3-3-7-0-59-3-6" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
        id="filter5197-8-9-9-9-3"
        x="-0.0457762"
        width="1.0915524"
@@ -4353,19 +4327,6 @@
     <filter
        inkscape:collect="always"
        style="color-interpolation-filters:sRGB"
-       id="filter10330-7-5-5-4-9"
-       x="-0.013693905"
-       width="1.0273879"
-       y="-0.021728534"
-       height="1.0434572">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="0.23845105"
-         id="feGaussianBlur10332-3-9-7-9-1" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       style="color-interpolation-filters:sRGB"
        id="filter11206"
        x="-0.1008"
        width="1.2016"
@@ -4384,20 +4345,25 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.6628352"
-     inkscape:cx="718.7467"
-     inkscape:cy="686.68876"
+     inkscape:zoom="6.4078241"
+     inkscape:cx="1460.7713"
+     inkscape:cy="674.88523"
      inkscape:document-units="px"
-     inkscape:current-layer="g24485"
+     inkscape:current-layer="g6255"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="995"
      inkscape:window-x="0"
      inkscape:window-y="28"
      inkscape:window-maximized="1"
-     showguides="true"
+     showguides="false"
      units="px"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     inkscape:snap-grids="false"
+     inkscape:snap-to-guides="false"
+     inkscape:snap-others="false"
+     inkscape:snap-nodes="false"
+     inkscape:snap-global="false">
     <inkscape:grid
        type="xygrid"
        id="grid8181"
@@ -4676,7 +4642,7 @@
          height="5.213697"
          width="19.595104"
          id="rect4890-4-25-7-0"
-         style="opacity:1;fill:#545656;fill-opacity:1;stroke:#363436;stroke-width:0.23021944;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="opacity:1;fill:#545656;fill-opacity:1;stroke:#363436;stroke-width:0.52916666;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <rect
          ry="10.000007"
          rx="10.000007"
@@ -16282,6 +16248,83 @@
            width="152.8289"
            id="rect5044-9-1-4-4-93"
            style="opacity:0.22000002;fill:#a0a0a2;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter5130-6-20-9-0-6)" />
+      </g>
+      <rect
+         style="opacity:0.53699999;fill:#ff7f2a;fill-opacity:1;stroke:none;stroke-width:0.28099999;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+         id="rect5926"
+         width="0.49680755"
+         height="0.39744604"
+         x="143.3584"
+         y="119.84637"
+         rx="1.8520833"
+         ry="0.39744604" />
+      <g
+         id="g6255">
+        <rect
+           inkscape:export-filename="/home/iurie/projects/geonkick/src/resources/navigator_bk.png"
+           ry="1.2492901"
+           rx="1.2492901"
+           style="display:inline;opacity:1;fill:#505050;fill-opacity:1;stroke:#343738;stroke-width:0.13229167;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="rect4510-9-0-8-0-5-1-4-1-1-1-3-9-6-2-3"
+           width="41.940456"
+           height="5.3541007"
+           x="361.56247"
+           y="110.70008"
+           inkscape:export-xdpi="138.85471"
+           inkscape:export-ydpi="138.85471" />
+        <path
+           transform="matrix(0.38616909,0,0,0.6004855,221.71235,45.270197)"
+           inkscape:transform-center-y="2.5797679"
+           inkscape:transform-center-x="0.23010104"
+           d="m 367.66283,115.39268 -1.78755,-1.03204 -1.78755,-1.03204 1.78755,-1.03204 1.78755,-1.03205 0,2.06409 z"
+           inkscape:randomized="0"
+           inkscape:rounded="0"
+           inkscape:flatsided="false"
+           sodipodi:arg2="2.0943951"
+           sodipodi:arg1="1.0471976"
+           sodipodi:r2="1.1916996"
+           sodipodi:r1="2.3833992"
+           sodipodi:cy="113.3286"
+           sodipodi:cx="366.47113"
+           sodipodi:sides="3"
+           id="path5990"
+           style="opacity:0.31;fill:#272726;fill-opacity:1;stroke:none;stroke-width:0.13229166;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+           sodipodi:type="star"
+           inkscape:export-filename="/home/iurie/projects/geonkick/src/resources/navigator_bk.png"
+           inkscape:export-xdpi="138.85471"
+           inkscape:export-ydpi="138.85471" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path6022-9"
+           d="m 364.57119,110.74424 c 0,5.28975 0,5.28975 0,5.28975"
+           style="display:inline;fill:none;stroke:#292828;stroke-width:0.10526156;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           inkscape:export-filename="/home/iurie/projects/geonkick/src/resources/navigator_bk.png"
+           inkscape:export-xdpi="138.85471"
+           inkscape:export-ydpi="138.85471" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path6022-9-1"
+           d="m 364.64814,110.77033 c 0,5.21015 0,5.21015 0,5.21015"
+           style="display:inline;fill:none;stroke:#8b8789;stroke-width:0.05229694;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           inkscape:export-filename="/home/iurie/projects/geonkick/src/resources/navigator_bk.png"
+           inkscape:export-xdpi="138.85471"
+           inkscape:export-ydpi="138.85471" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path6022-9-2"
+           d="m 400.41792,110.7206 c 0,5.28975 0,5.28975 0,5.28975"
+           style="display:inline;fill:none;stroke:#292828;stroke-width:0.10526156;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           inkscape:export-filename="/home/iurie/projects/geonkick/src/resources/navigator_bk.png"
+           inkscape:export-xdpi="138.85471"
+           inkscape:export-ydpi="138.85471" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path6022-9-1-7"
+           d="m 400.49487,110.74669 c 0,5.21015 0,5.21015 0,5.21015"
+           style="display:inline;fill:none;stroke:#8b8789;stroke-width:0.05229694;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           inkscape:export-filename="/home/iurie/projects/geonkick/src/resources/navigator_bk.png"
+           inkscape:export-xdpi="138.85471"
+           inkscape:export-ydpi="138.85471" />
       </g>
     </g>
   </g>

@@ -24,9 +24,27 @@
 #include "preset_navigator.h"
 #include "preset_browser_model.h"
 
+extern const unsigned char rk_navigator_bk_png[];
+
 PresetNavigator::PresetNavigator(GeonkickWidget *parent, PresetBrowserModel* model)
         : GeonkickWidget(parent)
         , browserModel{model}
+        // , prevButton{nullptr}
+        // , nextButton{nullptr}
 {
+        setFixedSize(230, 30);
+        setBackgroundImage(RkImage(size(), rk_navigator_bk_png));
+        // prevButton = new GeonnkickButton(this);
+        // openFileButton->setSize(0, height());
+        // nextButton = new GeonnkickButton(this);
+        // openFileButton->setSize(0, height());
         show();
 }
+
+void PresetNavigator::mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event)
+{
+        // if (event->x() > prevButton->x() + prevButton->width()
+        //     && event->x() < nextButton->x() + nextButton->width())
+        action openPresetBrowser();
+}
+

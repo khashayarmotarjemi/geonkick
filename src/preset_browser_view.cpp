@@ -34,6 +34,7 @@ PresetBrowserView::PresetBrowserView(GeonkickWidget *parent, PresetBrowserModel 
         , presetListView{nullptr}
 
 {
+        setModality(Rk::Modality::NonModal);
         setFixedSize(940, 600);
         setTitle("Preset Browser - " + std::string(GEOKICK_APP_NAME));
         show();

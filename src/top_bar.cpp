@@ -105,7 +105,6 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         presetNavigator->setBackgroundColor({100, 100, 100});
         presetNavigator->setTextColor({210, 226, 226, 140});
         presetNavigator->setPosition(aboutButton->x() + aboutButton->width() + 10, aboutButton->y());
-        presetNavigator->setSize(235, 30);
         RK_ACT_BIND(presetNavigator, openPresetBrowser,
                     RK_ACT_ARGS(), this, openPresetBrowser());
 

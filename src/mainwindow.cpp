@@ -52,6 +52,7 @@ MainWindow::MainWindow(RkMain *app, GeonkickApi *api, std::string preset)
         setFixedSize(940, 760);
         setTitle(GEOKICK_APP_NAME);
         geonkickApi->registerCallbacks(true);
+        RK_ACT_BIND(geonkickApi, stateChanged, RK_ACT_ARGS(), this, updateGui());
         show();
 }
 
@@ -189,7 +190,6 @@ void MainWindow::openPreset(const std::string &fileName)
                 topBar->setPresetName(filePath.stem());
                 geonkickApi->setCurrentWorkingPath("OpenPreset",
                                                    filePath.has_parent_path() ? filePath.parent_path() : filePath);
-                updateGui();
         }
 }
 

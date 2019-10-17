@@ -991,7 +991,8 @@ bool GeonkickApi::setPreset(const std::string &path)
         std::ifstream file;
         file.open(std::filesystem::absolute(filePath));
         if (!file.is_open()) {
-                RK_LOG_ERROR("Open Preset" + std::string(" - ") + std::string(GEOKICK_APP_NAME) << ". Can't open preset.");
+                RK_LOG_ERROR("Open Preset" + std::string(" - ")
+                             + std::string(GEOKICK_APP_NAME) << ". Can't open preset.");
                 return false;
         }
 
@@ -1000,5 +1001,6 @@ bool GeonkickApi::setPreset(const std::string &path)
         state->loadData(fileData);
         setState(state);
         file.close();
+        action stateChanged();
         return true;
 }
