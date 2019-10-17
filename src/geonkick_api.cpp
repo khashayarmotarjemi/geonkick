@@ -977,3 +977,28 @@ std::vector<gkick_real> GeonkickApi::loadSample(const std::string &file,
                 return data;
         return std::vector<gkick_real>();
 }
+
+bool GeonkickApi::setPreset(const std::string &path)
+{
+        std::filesystem::path filePath(path);
+        if (filePath.extension().empty()
+            || (filePath.extension() != ".gkick"
+            && filePath.extension() != ".GKICK")) {
+                RK_LOG_ERROR("Open Preset: " << "Can't open preset. Wrong file format.");
+                return false;
+        }
+
+        std::ifstream file;
+        file.open(std::filesystem::absolute(filePath));
+        if (!file.is_open()) {
+                RK_LOG_ERROR("Open Preset" + std::string(" - ") + std::string(GEOKICK_APP_NAME) << ". Can't open preset.");
+                return false;
+        }
+
+        std::string fileData((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+        auto state = std::make_shared<GeonkickState>();
+        state->loadData(fileData);
+        setState(state);
+        file.close();
+        return true;
+}

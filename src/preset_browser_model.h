@@ -81,17 +81,24 @@ class PresetBrowserModel {
         RkModel* getBundlesModel() const;
         RkModel* getGroupsModel() const;
         RkModel* getPresetsModel() const;
+        RK_DECL_ACT(presetSelected,
+                    presetSelected(const Preset* preset),
+                    RK_ARG_TYPE(const Preset*),
+                    RK_ARG_VAL(preset));
 
  protected:
         void loadData();
         bool loadPresetBundle(const std::unique_ptr<PresetBundle> &bundle,
                               const std::string &path);
         void loadPresetGroups(std::vector<std::unique_ptr<PresetGroup>> &presetGroups,
-                              const rapidjson::Value &groups);
+                              const rapidjson::Value &groups,
+                              const std::string &path);
         void loadPresets(std::vector<std::unique_ptr<Preset>> &presets,
-                         const rapidjson::Value &presetsArray);
+                         const rapidjson::Value &presetsArray,
+                         const std::string &path);
         bool loadPresetInfo(const std::unique_ptr<Preset> &preset,
-                            const rapidjson::Value &presetValue);
+                            const rapidjson::Value &presetValue,
+                            const std::string &path);
 
  private:
 
@@ -99,7 +106,8 @@ class PresetBrowserModel {
           public:
                 BundlesModel(PresetBrowserModel &parent)
                         : RkModel(parent.eventQueue)
-                        , parentModel{parent} {}
+                        , parentModel{parent}
+                        , currentIndex{parent.presetBundleIndex} {}
                 RkVariant data(int index, DataType type) const
                 {
                         const auto bundle = parentModel.presetBundle(index);
@@ -122,23 +130,34 @@ class PresetBrowserModel {
 
                 void selectIndex(int index)
                 {
-                        parentModel.setPresetBundle(index);
+                        if (rows() > 0) {
+                                currentIndex = index;
+                                if (currentIndex == parentModel.presetBundleIndex)
+                                        parentModel.groupsModel->selectIndex(parentModel.presetGroupIndex);
+                                else
+                                        parentModel.groupsModel->selectIndex(-1);
+                                parentModel.groupsModel->modelChanged();
+                        }
                 }
 
                 int selectedIndex() const
                 {
-                        return parentModel.presetBundleIndex;
+                        if (rows() < 1)
+                                return -1;
+                        return currentIndex;
                 }
 
           private:
                 PresetBrowserModel &parentModel;
+                int currentIndex;
         };
 
         class GroupsModel final : public RkModel {
           public:
                 GroupsModel(PresetBrowserModel& parent)
                         : RkModel(parent.eventQueue)
-                        , parentModel{parent} {}
+                        , parentModel{parent}
+                        , currentIndex{parent.presetGroupIndex} {}
                 RkVariant data(int index, DataType type) const
                 {
                         const auto group = parentModel.presetGroup(index);
@@ -155,7 +174,7 @@ class PresetBrowserModel {
 
                 size_t rows() const
                 {
-                        const auto bundle = parentModel.presetBundle(parentModel.presetBundleIndex);
+                        const auto bundle = parentModel.presetBundle(parentModel.bundlesModel->selectedIndex());
                         if (bundle)
                                 return bundle->groups.size();
                         return 0;
@@ -163,23 +182,35 @@ class PresetBrowserModel {
 
                 void selectIndex(int index)
                 {
-                        parentModel.setPresetGroup(index);
+                        if (rows() > 0) {
+                                currentIndex = index;
+                                if (currentIndex == parentModel.presetGroupIndex
+                                    && parentModel.bundlesModel->selectedIndex() == parentModel.presetBundleIndex)
+                                        parentModel.presetsModel->selectIndex(parentModel.presetIndex);
+                                else
+                                        parentModel.presetsModel->selectIndex(-1);
+                                parentModel.presetsModel->modelChanged();
+                        }
                 }
 
                 int selectedIndex() const
                 {
-                        return parentModel.presetGroupIndex;
+                        if (rows() < 1)
+                                return -1;
+                        return currentIndex;
                 }
 
           private:
                 PresetBrowserModel& parentModel;
+                int currentIndex;
         };
 
         class PresetsModel final : public RkModel {
           public:
                 PresetsModel(PresetBrowserModel &parent)
                         : RkModel(parent.eventQueue)
-                        , parentModel{parent} {}
+                        , parentModel{parent}
+                        , currentIndex{parent.presetIndex} {}
                 RkVariant data(int index, DataType type) const
                 {
                         const auto preset = parentModel.getPreset(index);
@@ -196,7 +227,7 @@ class PresetBrowserModel {
 
                 size_t rows() const
                 {
-                        const auto group = parentModel.presetGroup(parentModel.presetGroupIndex);
+                        const auto group = parentModel.presetGroup(parentModel.groupsModel->selectedIndex());
                         if (group)
                                 return group->presets.size();
                         return 0;
@@ -204,16 +235,22 @@ class PresetBrowserModel {
 
                 void selectIndex(int index)
                 {
-                        parentModel.setPreset(index);
+                        if (rows() > 0) {
+                                currentIndex = index;
+                                parentModel.setPreset(index);
+                        }
                 }
 
                 int selectedIndex() const
                 {
-                        return parentModel.presetIndex;
+                        if (rows() < 1)
+                                return -1;
+                        return currentIndex;
                 }
 
           private:
                 PresetBrowserModel &parentModel;
+                int currentIndex;
         };
 
         GeonkickApi *geonkickApi;

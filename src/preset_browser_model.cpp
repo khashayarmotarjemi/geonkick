@@ -31,8 +31,8 @@
 PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, RkEventQueue *queue)
         : geonkickApi{api}
         , eventQueue{queue}
-        , presetBundleIndex{0}
-        , presetGroupIndex{0}
+        , presetBundleIndex{-1}
+        , presetGroupIndex{-1}
         , presetIndex{-1}
         , bundlesModel{std::make_unique<BundlesModel>(*this)}
         , groupsModel{std::make_unique<GroupsModel>(*this)}
@@ -106,14 +106,15 @@ bool PresetBrowserModel::loadPresetBundle(const std::unique_ptr<PresetBundle> &b
                         if (m.name == "license"  && m.value.IsString())
                                 bundle->license = m.value.GetString();
                         if (m.name == "presetGroups" && m.value.IsArray())
-                                loadPresetGroups(bundle->groups, m.value);
+                                loadPresetGroups(bundle->groups, m.value, path);
                 }
         }
         return true;
 }
 
 void PresetBrowserModel::loadPresetGroups(std::vector<std::unique_ptr<PresetGroup>> &bundleGroups,
-                                          const rapidjson::Value &groups)
+                                          const rapidjson::Value &groups,
+                                          const std::string &path)
 {
         size_t n = 0;
         for (const auto &e: groups.GetArray()) {
@@ -123,26 +124,28 @@ void PresetBrowserModel::loadPresetGroups(std::vector<std::unique_ptr<PresetGrou
                         if (m.name == "name" && m.value.IsString())
                                 group->name = m.value.GetString();
                         if (m.name == "presets" && m.value.IsArray())
-                                loadPresets(group->presets, m.value);
+                                loadPresets(group->presets, m.value, path);
                 }
                 bundleGroups.emplace_back(std::move(group));
         }
 }
 
 void PresetBrowserModel::loadPresets(std::vector<std::unique_ptr<Preset>> &presets,
-                                     const rapidjson::Value &presetsArray)
+                                     const rapidjson::Value &presetsArray,
+                                     const std::string &path)
 {
         size_t n = 0;
         for (const auto &e: presetsArray.GetArray()) {
                 auto preset = std::make_unique<Preset>();
                 preset->name = std::to_string(n++);
-                if (loadPresetInfo(preset, e))
+                if (loadPresetInfo(preset, e, path))
                         presets.emplace_back(std::move(preset));
         }
 }
 
 bool PresetBrowserModel::loadPresetInfo(const std::unique_ptr<Preset> &preset,
-                                        const rapidjson::Value &presetValue)
+                                        const rapidjson::Value &presetValue,
+                                        const std::string &path)
 {
         if (presetValue.IsObject()) {
                 for (const auto &m: presetValue.GetObject()) {
@@ -154,6 +157,9 @@ bool PresetBrowserModel::loadPresetInfo(const std::unique_ptr<Preset> &preset,
                                 preset->authorUrl = m.value.GetString();
                         if (m.name == "license"  && m.value.IsString())
                                 preset->license = m.value.GetString();
+                        if (m.name == "file"  && m.value.IsString())
+                                preset->path = std::filesystem::path(path).parent_path()
+                                        / std::filesystem::path(std::string(m.value.GetString()));
                 }
         }
 
@@ -162,11 +168,8 @@ bool PresetBrowserModel::loadPresetInfo(const std::unique_ptr<Preset> &preset,
 
 void PresetBrowserModel::setPresetBundle(int index)
 {
-        if (!browserBundles.empty() && index > -1 && index < browserBundles.size()) {
+        if (!browserBundles.empty() && index > -1 && index < browserBundles.size())
                 presetBundleIndex = index;
-                groupsModel->modelChanged();
-                setPresetGroup(-1);
-        }
 }
 
 const PresetBundle* PresetBrowserModel::presetBundle(int index) const
@@ -182,19 +185,16 @@ void PresetBrowserModel::setPresetGroup(int index)
         if (!browserBundles.empty() && presetBundleIndex > -1
             && presetBundleIndex < browserBundles.size()) {
                auto &groups = browserBundles[presetBundleIndex]->groups;
-               if (!groups.empty() && index > -1 && index < groups.size()) {
-                        presetGroupIndex = index;
-                        presetIndex = -1;
-                        presetsModel->modelChanged();
-               }
+               if (!groups.empty() && index > -1 && index < groups.size())
+                       presetGroupIndex = index;
         }
 }
 
 const PresetGroup* PresetBrowserModel::presetGroup(int index) const
 {
-        if (!browserBundles.empty() && presetBundleIndex > -1
-            && presetBundleIndex < browserBundles.size()) {
-                auto &groups = browserBundles[presetBundleIndex]->groups;
+        if (!browserBundles.empty() && bundlesModel->selectedIndex() > -1
+            && bundlesModel->selectedIndex() < browserBundles.size()) {
+                auto &groups = browserBundles[bundlesModel->selectedIndex()]->groups;
                 if (!groups.empty() && index > -1 && index < groups.size())
                         return groups[index].get();
         }
@@ -203,24 +203,32 @@ const PresetGroup* PresetBrowserModel::presetGroup(int index) const
 
 void PresetBrowserModel::setPreset(int index)
 {
-        if (!browserBundles.empty() && presetBundleIndex > -1
-            && presetBundleIndex < browserBundles.size()) {
-                auto &groups = browserBundles[presetBundleIndex]->groups;
-                if (!groups.empty() && presetGroupIndex > -1 && presetGroupIndex < groups.size()) {
-                        auto &presets = groups[presetGroupIndex]->presets;
-                        if (!presets.empty() && index > -1 && index < presets.size())
+        if (!browserBundles.empty() && bundlesModel->selectedIndex() > -1
+            && bundlesModel->selectedIndex() < browserBundles.size()) {
+                auto &groups = browserBundles[bundlesModel->selectedIndex()]->groups;
+                if (!groups.empty() && groupsModel->selectedIndex() > -1
+                    && groupsModel->selectedIndex() < groups.size()) {
+                        auto &presets = groups[groupsModel->selectedIndex()]->presets;
+                        if (!presets.empty() && index > -1 && index < presets.size() && index != presetIndex) {
+                                presetBundleIndex = bundlesModel->selectedIndex();
+                                presetGroupIndex = groupsModel->selectedIndex();
                                 presetIndex = index;
+                                action presetSelected(presets[presetIndex].get());
+                                GEONKICK_LOG_INFO("path: " << presets[presetIndex].get()->path);
+                                geonkickApi->setPreset(presets[presetIndex].get()->path);
+                        }
                 }
         }
 }
 
 const Preset* PresetBrowserModel::getPreset(int index) const
 {
-        if (!browserBundles.empty() && presetBundleIndex > -1
-            && presetBundleIndex < browserBundles.size()) {
-                auto &groups = browserBundles[presetBundleIndex]->groups;
-                if (!groups.empty() && presetGroupIndex > -1 && presetGroupIndex < groups.size()) {
-                        auto &presets = groups[presetGroupIndex]->presets;
+        if (!browserBundles.empty() && bundlesModel->selectedIndex() > -1
+            && bundlesModel->selectedIndex() < browserBundles.size()) {
+                auto &groups = browserBundles[bundlesModel->selectedIndex()]->groups;
+                if (!groups.empty() && groupsModel->selectedIndex() > -1
+                    && groupsModel->selectedIndex() < groups.size()) {
+                        auto &presets = groups[groupsModel->selectedIndex()]->presets;
                         if (!presets.empty() && index > -1 && index < presets.size())
                                 return presets[index].get();
                 }

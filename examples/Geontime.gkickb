@@ -31,35 +31,49 @@
                    "author": "Geontime",
                    "authorUrl": "http://geontime.com",
                    "license": "CC-BY 4.0",
-                   "file": "TimeKit/Kick-1_5_2.gkick"
+                   "file": "Time Kit-1.0/Kick.gkick"
                 },
                 {
                    "name": "Snare",
                    "author": "Geontime",
                    "authorUrl": "http://geontime.com",
                    "license": "CC-BY 4.0",
-                   "file": "TimeKit/Kik-1_5_1.gkick"
+                   "file": "Time Kit-1.0/Snare.gkick"
+                },
+                {
+                   "name": "SnareT",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/SnareT.gkick"
                 },
                 {
                    "name": "Hit-Hat",
                    "author": "Geontime",
                    "authorUrl": "http://geontime.com",
                    "license": "CC-BY 4.0",
-                   "file": "TimeKit/Hit-Hat.gkick"
+                   "file": "Time Kit-1.0/Hit-Hat.gkick"
+                },
+                {
+                   "name": "Hit-Hat-Open",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/Hit-Hat-Open.gkick"
                 },
                 {
                    "name": "Hit-Hat-Closed",
                    "author": "Geontime",
                    "authorUrl": "http://geontime.com",
                    "license": "CC-BY 4.0",
-                   "file": "TimeKit/Hit-Hat-Closed.gkick"
+                   "file": "Time Kit-1.0/Hit-Hat-Closed.gkick"
                 },
                 {
-                   "name": "Shaker",
+                   "name": "Clap",
                    "author": "Geontime",
                    "authorUrl": "http://geontime.com",
                    "license": "CC-BY 4.0",
-                   "file": "TimeKit/Shaker.gkick"
+                   "file": "Time Kit-1.0/Clap.gkick"
                 }
             ]
         }

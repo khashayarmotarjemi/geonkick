@@ -169,9 +169,9 @@ void TopBar::setPresetName(const std::string &name)
                 std::string preset = name;
                 preset.resize(15);
                 preset += "...";
-                presetNameLabel->setText(preset);
+                //                presetNameLabel->setText(preset);
         } else {
-                presetNameLabel->setText(name);
+                //                presetNameLabel->setText(name);
         }
 }
 
