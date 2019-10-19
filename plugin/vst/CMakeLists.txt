@@ -24,9 +24,12 @@ set(GKICK_VST_SOURCES
   ${GKICK_VST_DIR}/GKickVstProcessor.cpp
   ${GKICK_VST_DIR}/GKickVstEditor.cpp)
 
-smtg_add_vst3plugin(geonkick_vst3 ${GKICK_VST_HEADERS} ${GKICK_VST_SOURCES})
-target_link_libraries(geonkick_vst3 PRIVATE geonkick_common)
-target_link_libraries(geonkick_vst3 PRIVATE base sdk redkite)
-target_sources(geonkick_vst3 PRIVATE ${GKICK_VST_DIR}/info.rc)
-add_dependencies(geonkick_vst3 geonkick_common)
+set(target geonkick)
+
+smtg_add_vst3plugin(${target} ${GKICK_VST_HEADERS} ${GKICK_VST_SOURCES})
+target_link_libraries(${target} PRIVATE geonkick_common)
+target_link_libraries(${target} PRIVATE sdk base pluginterfaces)
+target_link_libraries(${target} PRIVATE redkite X11 sndfile config++ cairo)
+add_dependencies(${target} geonkick_common)
+
 

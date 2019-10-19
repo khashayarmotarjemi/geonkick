@@ -45,7 +45,7 @@ class GKickVstEditor : public Vst::EditorView {
 
  private:
         std::unique_ptr<RkMain> guiApp;
-		MainWindow *mainWindow;
+        MainWindow *mainWindow;
 };
 
 #endif // GKICK_VST_EDITOR_H
