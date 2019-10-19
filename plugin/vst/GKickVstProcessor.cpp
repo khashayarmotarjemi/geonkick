@@ -23,28 +23,35 @@
 
 #include "GKickVstProcessor.h"
 #include "VstIds.h"
-
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/base/ibstream.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
+#include "pluginterfaces/vst/ivstevents.h"
+#include "geonkick_api.h"
 
 namespace Steinberg
 {
 
 GKickVstProcessor::GKickVstProcessor()
+        : geonkickApi{nullptr}
 {
-        GEONKICK_LOG_INFO("called");
         setControllerClass(GKickVstControllerUID);
 }
 
 tresult PLUGIN_API GKickVstProcessor::initialize(FUnknown* context)
 {
-        GEONKICK_LOG_INFO("called");
-        auto res = AudioEffect::initialize(context);
+        auto res = Vst::AudioEffect::initialize(context);
         if (res != kResultTrue)
                 return kResultFalse;
 
-        addAudioOutput(STR16("AudioOutputXX"), Vst::SpeakerArr::kStereo);
+        addAudioOutput(STR16("AudioOutput"), Vst::SpeakerArr::kStereo);
+        addEventInput(STR16("MIDI in"), 1);
+
+        geonkickApi = std::make_unique<GeonkickApi>();
+        if (!geonkickApi->init()) {
+                GEONKICK_LOG_ERROR("can't init Geonkick API");
+                return kResultFalse;
+        }
         return kResultTrue;
 }
 
@@ -54,25 +61,60 @@ tresult PLUGIN_API GKickVstProcessor::setBusArrangements(Vst::SpeakerArrangement
                                                          int32 numOuts)
 {
         GEONKICK_LOG_INFO("called");
-        if (numIns == 1 && numOuts == 1 && inputs[0] == outputs[0])
-                return AudioEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
+        if (numIns == 0 && numOuts == 1)
+                return Vst::AudioEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
         return kResultFalse;
 }
 
 tresult PLUGIN_API GKickVstProcessor::setupProcessing(Vst::ProcessSetup& setup)
 {
         GEONKICK_LOG_INFO("called");
-        return AudioEffect::setupProcessing(setup);
+        return Vst::AudioEffect::setupProcessing(setup);
 }
 
 tresult PLUGIN_API GKickVstProcessor::setActive(TBool state)
 {
         GEONKICK_LOG_INFO("called");
-        return AudioEffect::setActive(state);
+        return Vst::AudioEffect::setActive(state);
 }
 
 tresult PLUGIN_API GKickVstProcessor::process(Vst::ProcessData& data)
 {
+        if (data.numSamples > 0) {
+                //		SpeakerArrangement arr;
+                //		getBusArrangement(kOutput, 0, arr);
+		auto numChannels = 2;
+                auto events = data.inputEvents;
+                auto nEvents = events->getEventCount();
+                auto eventIndex = 0;
+                for (decltype(data.numSamples) i = 0; i < data.numSamples; i++) {
+                        if (eventIndex < nEvents) {
+                                Vst::Event event;
+                                events->getEvent(eventIndex++, event);
+                                if (event.sampleOffset == i) {
+                                        switch (event.type) {
+                                        case Vst::Event::kNoteOnEvent:
+                                                geonkickApi->setKeyPressed(true,
+                                                                           event.noteOn.pitch,
+                                                                           event.noteOn.velocity);
+                                                break;
+
+                                        case Vst::Event::kNoteOffEvent:
+                                                geonkickApi->setKeyPressed(false,
+                                                                           event.noteOff.pitch,
+                                                                           event.noteOff.velocity);
+                                                break;
+                                        default:
+                                                break;
+                                        }
+                                }
+                        }
+                        auto val = geonkickApi->getAudioFrame();
+                        data.outputs[0].channelBuffers32[0][i] = val;
+                        data.outputs[0].channelBuffers32[1][i] = val;
+                }
+	}
+
         return kResultOk;
 }
 

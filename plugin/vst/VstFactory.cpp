@@ -48,7 +48,7 @@ DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstProcessorUID),
            kVstAudioEffectClass,
            gkickPluginName,
            Vst::kDistributable,
-           "Fx",
+           Vst::PlugType::kInstrumentSynth,
            "1.10.0",
            kVstVersionString,
            GKickVstProcessor::createInstance)
