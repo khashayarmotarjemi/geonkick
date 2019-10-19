@@ -250,3 +250,16 @@ RkModel* PresetBrowserModel::getPresetsModel() const
 {
         return static_cast<RkModel*>(presetsModel.get());
 }
+
+void PresetBrowserModel::previousPreset()
+{
+}
+
+void PresetBrowserModel::nextPreset()
+{
+}
+
+const Preset* PresetBrowserModel::selectedPreset() const
+{
+        return getPreset(presetIndex);
+}

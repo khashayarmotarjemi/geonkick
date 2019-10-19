@@ -27,7 +27,11 @@
 #include "globals.h"
 #include "geonkick_widget.h"
 
+#include <RkEvent.h>
+#include <RkLabel.h>
+
 class PresetBrowserModel;
+class GeonkickButton;
 
 /**
  * PresetNavigator
@@ -39,10 +43,25 @@ class PresetNavigator: public GeonkickWidget {
         PresetNavigator(GeonkickWidget *parent, PresetBrowserModel* model);
         RK_DECL_ACT(openPresetBrowser, openPresetBrowser(),
                     RK_ARG_TYPE(), RK_ARG_VAL());
- protected:
-        void mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event) final;
  private:
+        class NavigatorLabel: public RkLabel {
+
+         public:
+                NavigatorLabel(GeonkickWidget* parent)
+                        : RkLabel(parent) {}
+                RK_DECL_ACT(pressed, pressed(), RK_ARG_TYPE(), RK_ARG_VAL());
+
+          protected:
+                void mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event) final
+                {
+                        action pressed();
+                }
+        };
+
         PresetBrowserModel *browserModel;
+        GeonkickButton *prevButton;
+        GeonkickButton *nextButton;
+        NavigatorLabel* presetLabel;
 };
 
 #endif // GEONKICK_PRESET_NAVIGATOR_H

@@ -23,28 +23,48 @@
 
 #include "preset_navigator.h"
 #include "preset_browser_model.h"
+#include "geonkick_button.h"
 
-extern const unsigned char rk_navigator_bk_png[];
+extern const unsigned char rk_navigator_label_png[];
+extern const unsigned char rk_navigator_prev_png[];
+extern const unsigned char rk_navigator_prev_pressed_png[];
+extern const unsigned char rk_navigator_next_png[];
+extern const unsigned char rk_navigator_next_pressed_png[];
 
 PresetNavigator::PresetNavigator(GeonkickWidget *parent, PresetBrowserModel* model)
         : GeonkickWidget(parent)
         , browserModel{model}
-        // , prevButton{nullptr}
-        // , nextButton{nullptr}
+        , prevButton{nullptr}
+        , nextButton{nullptr}
+        , presetLabel{nullptr}
 {
         setFixedSize(230, 30);
-        setBackgroundImage(RkImage(size(), rk_navigator_bk_png));
-        // prevButton = new GeonnkickButton(this);
-        // openFileButton->setSize(0, height());
-        // nextButton = new GeonnkickButton(this);
-        // openFileButton->setSize(0, height());
-        show();
-}
 
-void PresetNavigator::mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event)
-{
-        // if (event->x() > prevButton->x() + prevButton->width()
-        //     && event->x() < nextButton->x() + nextButton->width())
-        action openPresetBrowser();
+        prevButton = new GeonkickButton(this);
+        prevButton->setSize(18, height());
+        prevButton->setPosition(0, 0);
+        prevButton->setPressedImage(RkImage(prevButton->size(), rk_navigator_prev_pressed_png));
+        prevButton->setUnpressedImage(RkImage(prevButton->size(), rk_navigator_prev_png));
+        RK_ACT_BIND(prevButton, toggled, RK_ACT_ARGS(bool b), browserModel, previousPreset());
+
+        nextButton = new GeonkickButton(this);
+        nextButton->setSize(18, height());
+        nextButton->setPosition(width() - nextButton->width(), 0);
+        nextButton->setPressedImage(RkImage(nextButton->size(), rk_navigator_next_pressed_png));
+        nextButton->setUnpressedImage(RkImage(nextButton->size(), rk_navigator_next_png));
+        RK_ACT_BIND(nextButton, toggled, RK_ACT_ARGS(bool b), browserModel, nextPreset());
+
+        presetLabel = new NavigatorLabel(this);
+        auto preset = model->selectedPreset();
+        presetLabel->setText("Hit-Hat Closed");
+        presetLabel->setBackgroundColor(background());
+        presetLabel->setSize(width() - 2 * prevButton->width(), 26);
+        presetLabel->setPosition(prevButton->x() + prevButton->width(), 2);
+        presetLabel->show();
+        setBackgroundPosition(18, 0);
+        setBackgroundImage(RkImage(196, 30, rk_navigator_label_png));
+        RK_ACT_BIND(presetLabel, pressed, RK_ACT_ARGS(), this, openPresetBrowser());
+
+        show();
 }
 

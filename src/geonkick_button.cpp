@@ -48,6 +48,12 @@ void GeonkickButton::mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &
         }
 }
 
+void GeonkickButton::mouseButtonReleaseEvent(const std::shared_ptr<RkMouseEvent> &event)
+{
+        if (!isCheckable())
+                setPressed(false);
+}
+
 void GeonkickButton::setPressedImage(const RkImage &img)
 {
         pressedImage = img;

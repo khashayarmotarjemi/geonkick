@@ -85,6 +85,9 @@ class PresetBrowserModel {
                     presetSelected(const Preset* preset),
                     RK_ARG_TYPE(const Preset*),
                     RK_ARG_VAL(preset));
+        void previousPreset();
+        void nextPreset();
+        const Preset* selectedPreset() const;
 
  protected:
         void loadData();
