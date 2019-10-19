@@ -24,6 +24,7 @@
 #include "geonkick_widget.h"
 
 #include <RkPainter.h>
+#include <RkPoint.h>
 
 GeonkickWidget::GeonkickWidget(RkMain *app, const RkNativeWindowInfo &info, Rk::WindowFlags flags)
         : RkWidget(app, info, flags)
@@ -64,7 +65,7 @@ void GeonkickWidget::paintEvent(const std::shared_ptr<RkPaintEvent> &event)
         if (!backgroundImage.isNull()) {
                 RkPainter painter(this);
                 painter.fillRect(rect(), background());
-                painter.drawImage(backgroundImage, 0, 0);
+                painter.drawImage(backgroundImage, backgroundPosition.x(), backgroundPosition.y());
         }
 
         paintWidget(event);
@@ -81,5 +82,10 @@ void GeonkickWidget::setBackgroundImage(const RkImage &img)
                 backgroundImage = img;
                 update();
         }
+}
+
+void GeonkickWidget::setBackgroundPosition(int x, int y)
+{
+        backgroundPosition = {x, y};
 }
 

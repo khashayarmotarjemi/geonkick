@@ -2,8 +2,6 @@ cmake_minimum_required (VERSION 3.7)
 
 project(geonkick VERSION 1.10.0)
 
-# NOTE:  vst/Windows is not implemented yet.
-
 option(GKICK_STANDALONE "Enable build for standalone" ON)
 option(GKICK_PLUGIN "Enable build for plugins" ON)
 option(GKICK_PLUGIN_LV2 "Enable build for LV2 plugin" ON)
@@ -72,6 +70,9 @@ set(GKICK_COMMON_HEADERS
   ${GKICK_COMMON_DIR}/oscillator_group_box.h
   ${GKICK_COMMON_DIR}/about.h
   ${GKICK_COMMON_DIR}/export_widget.h
+  ${GKICK_COMMON_DIR}/preset_browser_model.h
+  ${GKICK_COMMON_DIR}/preset_browser_view.h
+  ${GKICK_COMMON_DIR}/preset_navigator.h
   ${GKICK_COMMON_DIR}/mainwindow.h)
 
 set(GKICK_COMMON_SOURCES
@@ -103,13 +104,21 @@ set(GKICK_COMMON_SOURCES
   ${GKICK_COMMON_DIR}/oscillator_group_box.cpp
   ${GKICK_COMMON_DIR}/export_widget.cpp
   ${GKICK_COMMON_DIR}/about.cpp
+  ${GKICK_COMMON_DIR}/preset_browser_model.cpp
+  ${GKICK_COMMON_DIR}/preset_browser_view.cpp
+  ${GKICK_COMMON_DIR}/preset_navigator.cpp
   ${GKICK_COMMON_DIR}/mainwindow.cpp)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SNDFILE sndfile)
 if (NOT SNDFILE_FOUND)
-    message(FATAL_ERROR "can't find sndfile library")
+  message(FATAL_ERROR "can't find sndfile library")
 endif(NOT SNDFILE_FOUND)
+
+pkg_check_modules(Libconfig libconfig)
+if (NOT Libconfig_FOUND)
+  message(FATAL_ERROR "can't find libconfig library")
+endif(NOT Libconfig_FOUND)
 
 if (GKICK_STANDALONE)
   pkg_check_modules(JACK jack)

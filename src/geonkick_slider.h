@@ -50,6 +50,7 @@ class GeonkickSlider: public GeonkickWidget
         void mouseButtonPressEvent(const std::shared_ptr<RkMouseEvent> &event) final;
         void mouseMoveEvent(const std::shared_ptr<RkMouseEvent> &event) final;
         void mouseButtonReleaseEvent(const std::shared_ptr<RkMouseEvent> &event) final;
+        void wheelEvent(const std::shared_ptr<RkWheelEvent> &event) final;
         int pixelsFromValue() const;
 
  private:

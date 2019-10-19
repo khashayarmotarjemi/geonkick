@@ -31,6 +31,7 @@
 
 class RkPaintEvent;
 struct RkNativeWindowInfo;
+class RkPoint;
 
 class GeonkickWidget: public RkWidget
 {
@@ -41,11 +42,13 @@ class GeonkickWidget: public RkWidget
         virtual ~GeonkickWidget();
         void setBackgroundImage(const RkImage &img);
         void setBackgroundImage(const std::string &file);
+        void setBackgroundPosition(int x, int y);
         void paintEvent(const std::shared_ptr<RkPaintEvent> &event) final;
         virtual void paintWidget(const std::shared_ptr<RkPaintEvent> &event);
 
 private:
         RkImage backgroundImage;
+        RkPoint backgroundPosition;
 };
 
 #endif // GEONKICK_WIDGET_H

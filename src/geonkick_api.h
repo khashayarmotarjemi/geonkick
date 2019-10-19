@@ -176,6 +176,7 @@ class GeonkickApi {
   void setCurrentWorkingPath(const std::string &key, const std::filesystem::path &path);
   void tuneAudioOutput(bool tune);
   bool isAudioOutputTuned() const;
+  bool setPreset(const std::string &path);
 
   RK_DECL_ACT(kickLengthUpdated, kickLengthUpdated(double val), RK_ARG_TYPE(double), RK_ARG_VAL(val));
   RK_DECL_ACT(kickAmplitudeUpdated, kickAmplitudeUpdated(double val), RK_ARG_TYPE(double), RK_ARG_VAL(val));

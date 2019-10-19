@@ -1,0 +1,265 @@
+/**
+ * File name: preset_browser_model.cpp
+ * Project: Geonkick (A percussion synthesizer)
+ *
+ * Copyright (C) 2019 Iurie Nistor <http://geontime.com>
+ *
+ * This file is part of Geonkick.
+ *
+ * Geonkick is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
+
+#include "preset_browser_model.h"
+#include "geonkick_api.h"
+
+#include <RkEventQueue.h>
+
+#include <libconfig.h++>
+
+PresetBrowserModel::PresetBrowserModel(GeonkickApi *api, RkEventQueue *queue)
+        : geonkickApi{api}
+        , eventQueue{queue}
+        , presetBundleIndex{-1}
+        , presetGroupIndex{-1}
+        , presetIndex{-1}
+        , bundlesModel{std::make_unique<BundlesModel>(*this)}
+        , groupsModel{std::make_unique<GroupsModel>(*this)}
+        , presetsModel{std::make_unique<PresetsModel>(*this)}
+{
+        loadData();
+}
+
+void PresetBrowserModel::loadData()
+{
+        libconfig::Config cfg;
+        auto configFilePath = geonkickApi->getSettings("Config/PresetBundles");
+        try {
+                cfg.readFile(configFilePath.c_str());
+        } catch(...) {
+                GEONKICK_LOG_ERROR("can't read config file: " << configFilePath);
+                return;
+        }
+
+        // Load the preset bundles list and their data.
+        const libconfig::Setting& root = cfg.getRoot();
+        try {
+                const libconfig::Setting &presetBundles = root["PresetBundles"];
+                size_t n = 0;
+                for (const auto &presetBundle: presetBundles) {
+                        std::string path;
+                        std::string name;
+                        if (presetBundle.lookupValue("name", name)
+                            && presetBundle.lookupValue("path", path)) {
+                                auto bundle = std::make_unique<PresetBundle>();
+                                bundle->name = name.empty() ? "Unknown " + std::to_string(n++) : name;
+                                if (loadPresetBundle(bundle, path))
+                                        browserBundles.emplace_back(std::move(bundle));
+                        }
+                }
+        } catch (const libconfig::SettingNotFoundException &nfex) {
+                GEONKICK_LOG_INFO("can't get info  about preset bundles");
+        }
+}
+
+bool PresetBrowserModel::loadPresetBundle(const std::unique_ptr<PresetBundle> &bundle,
+                                          const std::string &path)
+{
+        std::filesystem::path filePath(path);
+        if (filePath.extension().empty()
+            || (filePath.extension() != ".gkickb"
+            && filePath.extension() != ".GKICKB")) {
+                GEONKICK_LOG_ERROR("can't open preset bundle. Wrong file format.");
+                return false;
+        }
+
+        std::ifstream file;
+        file.open(std::filesystem::absolute(filePath));
+        if (!file.is_open()) {
+                GEONKICK_LOG_ERROR("can't open preset: " << filePath);
+                return false;
+        }
+        std::string fileData((std::istreambuf_iterator<char>(file)),
+                             (std::istreambuf_iterator<char>()));
+
+        rapidjson::Document document;
+        document.Parse(fileData.c_str());
+        if (document.IsObject()) {
+                for (const auto &m: document.GetObject()) {
+                        if (m.name == "name" && m.value.IsString())
+                                bundle->name = m.value.GetString();
+                        if (m.name == "author"  && m.value.IsString())
+                                bundle->author = m.value.GetString();
+                        if (m.name == "authorUrl"  && m.value.IsString())
+                                bundle->authorUrl = m.value.GetString();
+                        if (m.name == "license"  && m.value.IsString())
+                                bundle->license = m.value.GetString();
+                        if (m.name == "presetGroups" && m.value.IsArray())
+                                loadPresetGroups(bundle->groups, m.value, path);
+                }
+        }
+        return true;
+}
+
+void PresetBrowserModel::loadPresetGroups(std::vector<std::unique_ptr<PresetGroup>> &bundleGroups,
+                                          const rapidjson::Value &groups,
+                                          const std::string &path)
+{
+        size_t n = 0;
+        for (const auto &e: groups.GetArray()) {
+                auto group = std::make_unique<PresetGroup>();
+                group->name = "Unknown " + std::to_string(n++);
+                for (const auto &m: e.GetObject()) {
+                        if (m.name == "name" && m.value.IsString())
+                                group->name = m.value.GetString();
+                        if (m.name == "presets" && m.value.IsArray())
+                                loadPresets(group->presets, m.value, path);
+                }
+                bundleGroups.emplace_back(std::move(group));
+        }
+}
+
+void PresetBrowserModel::loadPresets(std::vector<std::unique_ptr<Preset>> &presets,
+                                     const rapidjson::Value &presetsArray,
+                                     const std::string &path)
+{
+        size_t n = 0;
+        for (const auto &e: presetsArray.GetArray()) {
+                auto preset = std::make_unique<Preset>();
+                preset->name = std::to_string(n++);
+                if (loadPresetInfo(preset, e, path))
+                        presets.emplace_back(std::move(preset));
+        }
+}
+
+bool PresetBrowserModel::loadPresetInfo(const std::unique_ptr<Preset> &preset,
+                                        const rapidjson::Value &presetValue,
+                                        const std::string &path)
+{
+        if (presetValue.IsObject()) {
+                for (const auto &m: presetValue.GetObject()) {
+                        if (m.name == "name" && m.value.IsString())
+                                preset->name = m.value.GetString();
+                        if (m.name == "author"  && m.value.IsString())
+                                preset->author = m.value.GetString();
+                        if (m.name == "authorUrl"  && m.value.IsString())
+                                preset->authorUrl = m.value.GetString();
+                        if (m.name == "license"  && m.value.IsString())
+                                preset->license = m.value.GetString();
+                        if (m.name == "file"  && m.value.IsString())
+                                preset->path = std::filesystem::path(path).parent_path()
+                                        / std::filesystem::path(std::string(m.value.GetString()));
+                }
+        }
+
+        return true;
+}
+
+void PresetBrowserModel::setPresetBundle(int index)
+{
+        if (!browserBundles.empty() && index > -1 && index < browserBundles.size())
+                presetBundleIndex = index;
+}
+
+const PresetBundle* PresetBrowserModel::presetBundle(int index) const
+{
+        if (!browserBundles.empty() && index > -1
+            && index < browserBundles.size())
+                return browserBundles[index].get();
+        return nullptr;
+}
+
+void PresetBrowserModel::setPresetGroup(int index)
+{
+        if (!browserBundles.empty() && presetBundleIndex > -1
+            && presetBundleIndex < browserBundles.size()) {
+               auto &groups = browserBundles[presetBundleIndex]->groups;
+               if (!groups.empty() && index > -1 && index < groups.size())
+                       presetGroupIndex = index;
+        }
+}
+
+const PresetGroup* PresetBrowserModel::presetGroup(int index) const
+{
+        if (!browserBundles.empty() && bundlesModel->selectedIndex() > -1
+            && bundlesModel->selectedIndex() < browserBundles.size()) {
+                auto &groups = browserBundles[bundlesModel->selectedIndex()]->groups;
+                if (!groups.empty() && index > -1 && index < groups.size())
+                        return groups[index].get();
+        }
+        return nullptr;
+}
+
+void PresetBrowserModel::setPreset(int index)
+{
+        if (!browserBundles.empty() && bundlesModel->selectedIndex() > -1
+            && bundlesModel->selectedIndex() < browserBundles.size()) {
+                auto &groups = browserBundles[bundlesModel->selectedIndex()]->groups;
+                if (!groups.empty() && groupsModel->selectedIndex() > -1
+                    && groupsModel->selectedIndex() < groups.size()) {
+                        auto &presets = groups[groupsModel->selectedIndex()]->presets;
+                        if (!presets.empty() && index > -1 && index < presets.size() && index != presetIndex) {
+                                presetBundleIndex = bundlesModel->selectedIndex();
+                                presetGroupIndex = groupsModel->selectedIndex();
+                                presetIndex = index;
+                                action presetSelected(presets[presetIndex].get());
+                                GEONKICK_LOG_INFO("path: " << presets[presetIndex].get()->path);
+                                geonkickApi->setPreset(presets[presetIndex].get()->path);
+                        }
+                }
+        }
+}
+
+const Preset* PresetBrowserModel::getPreset(int index) const
+{
+        if (!browserBundles.empty() && bundlesModel->selectedIndex() > -1
+            && bundlesModel->selectedIndex() < browserBundles.size()) {
+                auto &groups = browserBundles[bundlesModel->selectedIndex()]->groups;
+                if (!groups.empty() && groupsModel->selectedIndex() > -1
+                    && groupsModel->selectedIndex() < groups.size()) {
+                        auto &presets = groups[groupsModel->selectedIndex()]->presets;
+                        if (!presets.empty() && index > -1 && index < presets.size())
+                                return presets[index].get();
+                }
+        }
+        return nullptr;
+}
+
+RkModel* PresetBrowserModel::getBundlesModel() const
+{
+        return static_cast<RkModel*>(bundlesModel.get());
+}
+
+RkModel* PresetBrowserModel::getGroupsModel() const
+{
+        return static_cast<RkModel*>(groupsModel.get());
+}
+
+RkModel* PresetBrowserModel::getPresetsModel() const
+{
+        return static_cast<RkModel*>(presetsModel.get());
+}
+
+void PresetBrowserModel::previousPreset()
+{
+}
+
+void PresetBrowserModel::nextPreset()
+{
+}
+
+const Preset* PresetBrowserModel::selectedPreset() const
+{
+        return getPreset(presetIndex);
+}

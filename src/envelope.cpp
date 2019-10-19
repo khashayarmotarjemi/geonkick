@@ -103,7 +103,7 @@ void Envelope::drawTimeScale(RkPainter &painter)
                 painter.drawLine(x, point.y() - font.size() - 4, x, point.y() - H());
 
                 RkRect rect(x - 12, point.y() - 12, 25, font.size());
-                painter.setPen(RkColor(110, 110, 110));
+                painter.setPen(RkPen(RkColor(110, 110, 110)));
                 painter.drawText(rect, std::to_string(std::llround(i * val)));
                 x += dx;
         }
@@ -156,7 +156,7 @@ void Envelope::drawValueScale(RkPainter &painter)
                         painter.drawText(rect, ss.str(), Rk::Alignment::AlignRight);
                 }
         } else if (type() == Type::Frequency || type() == Type::FilterCutOff) {
-                std::vector<int> values {20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 16000};
+                constexpr std::array<int, 10> values {20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 16000};
                 for (auto value : values) {
                         int x = getOrigin().x();
                         int y = getOrigin().y() - H() * (log10(value) - log10(20)) / (log10(envelopeAmplitude()) - log10(20));
@@ -331,30 +331,31 @@ void Envelope::setPoints(const std::vector<RkRealPoint> &points)
 void Envelope::addPoint(const RkPoint &point)
 {
         auto scaledPoint = scaleDown(point);
-        if (scaledPoint.y() < 0)
-                scaledPoint.setY(0);
-        else if (scaledPoint.y() > 1)
+        if (scaledPoint.y() < 0.0)
+                scaledPoint.setY(0.0);
+        else if (scaledPoint.y() > 1.0)
                 scaledPoint.setY(1);
 
-  	if (scaledPoint.x() > 1) {
-	        scaledPoint.setX(1);
-		envelopePoints.push_back(scaledPoint);
-	} else if (scaledPoint.x() < 0) {
-                scaledPoint.setX(0);
+        if (scaledPoint.x() > 1.0) {
+	        scaledPoint.setX(1.0);
+		envelopePoints.emplace_back(scaledPoint);
+	} else if (scaledPoint.x() < 0.0) {
+                scaledPoint.setX(0.0);
                 envelopePoints.insert(envelopePoints.begin(), scaledPoint);
         } else if (envelopePoints.empty()) {
-                envelopePoints.push_back(scaledPoint);
+                envelopePoints.emplace_back(scaledPoint);
 	} else if (scaledPoint.x() < envelopePoints[0].x()) {
                 envelopePoints.insert(envelopePoints.begin(), scaledPoint);
 	} else if (scaledPoint.x() > envelopePoints.back().x()) {
-                envelopePoints.push_back(scaledPoint);
+                envelopePoints.emplace_back(scaledPoint);
 	} else {
-		for (auto it = envelopePoints.begin(); it != envelopePoints.end(); ++it) {
-			if (scaledPoint.x() < it->x()) {
-                                envelopePoints.insert(it, scaledPoint);
-                                break;
-			}
-		}
+                auto it = lower_bound(envelopePoints.begin(), envelopePoints.end(), scaledPoint,
+                                      [](decltype(scaledPoint) p, decltype(scaledPoint) val)
+                                      -> bool { return val.x() > p.x(); });
+                if (it == envelopePoints.end())
+                        return;
+                else
+                        envelopePoints.insert(it, scaledPoint);
 	}
         pointAddedEvent(scaledPoint.x(), scaledPoint.y());
 }
@@ -499,37 +500,34 @@ void Envelope::setDotRadius(int radius)
 
 std::string Envelope::frequencyToNote(rk_real f)
 {
+        constexpr std::array<double, 12> pitches {
+                                           16.35160,
+                                           17.32391,
+                                           18.35405,
+                                           19.44544,
+                                           20.60172,
+                                           21.82676,
+                                           23.12465,
+                                           24.49971,
+                                           25.95654,
+                                           27.50000,
+                                           29.13524,
+                                           30.86771};
+        constexpr std::array<const char*, 12> notes {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
         if (f < 16.35160 || f > 7902.133)
                 return "";
 
         int n = 0;
         while (f > 32.70320) {
-                f /= 2;
+                f /= 2.0;
                 n++;
         }
 
         int octave = n;
-        std::vector<double> pitches {
-                        16.35160,
-                        17.32391,
-                        18.35405,
-                        19.44544,
-                        20.60172,
-                        21.82676,
-                        23.12465,
-                        24.49971,
-                        25.95654,
-                        27.50000,
-                        29.13524,
-                        30.86771};
-
-        std::vector<std::string> notes{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-
         n = 12;
         while (--n && pitches[n] > f);
         if (n < 11 && f > (pitches[n + 1] - pitches[n]) / 2)
                 n++;
 
-        return "(" + notes[n] + std::to_string(octave) + ")";
+        return "(" + std::string(notes[n]) + std::to_string(octave) + ")";
 }
-

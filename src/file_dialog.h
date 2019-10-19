@@ -54,6 +54,7 @@ class FilesView: public GeonkickWidget {
         void mouseDoubleClickEvent(const std::shared_ptr<RkMouseEvent> &event) final;
         void mouseMoveEvent(const std::shared_ptr<RkMouseEvent> &event) final;
         void keyPressEvent(const std::shared_ptr<RkKeyEvent> &event) final;
+        void wheelEvent(const std::shared_ptr<RkWheelEvent> &event);
         void loadCurrentDirectory();
         int getLine(int x, int y) const;
         void onLineUp();

@@ -56,6 +56,15 @@ void GeonkickApi::setEventQueue(RkEventQueue *queue)
 
 bool GeonkickApi::init()
 {
+        auto homeDir = std::getenv("HOME");
+        if (homeDir == nullptr) {
+                GEONKICK_LOG_ERROR("can't get home directory");
+                return false;
+        }
+        auto configPath = std::filesystem::path(homeDir)
+                / std::filesystem::path(".geonkick/presetBundles.cfg");
+        setSettings("Config/PresetBundles", configPath.string());
+
   	if (geonkick_create(&geonkickApi) != GEONKICK_OK) {
 	        GEONKICK_LOG_ERROR("can't create geonkick API");
                 return false;
@@ -967,4 +976,31 @@ std::vector<gkick_real> GeonkickApi::loadSample(const std::string &file,
         if (n > 0)
                 return data;
         return std::vector<gkick_real>();
+}
+
+bool GeonkickApi::setPreset(const std::string &path)
+{
+        std::filesystem::path filePath(path);
+        if (filePath.extension().empty()
+            || (filePath.extension() != ".gkick"
+            && filePath.extension() != ".GKICK")) {
+                RK_LOG_ERROR("Open Preset: " << "Can't open preset. Wrong file format.");
+                return false;
+        }
+
+        std::ifstream file;
+        file.open(std::filesystem::absolute(filePath));
+        if (!file.is_open()) {
+                RK_LOG_ERROR("Open Preset" + std::string(" - ")
+                             + std::string(GEOKICK_APP_NAME) << ". Can't open preset.");
+                return false;
+        }
+
+        std::string fileData((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+        auto state = std::make_shared<GeonkickState>();
+        state->loadData(fileData);
+        setState(state);
+        file.close();
+        action stateChanged();
+        return true;
 }

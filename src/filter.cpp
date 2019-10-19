@@ -84,6 +84,7 @@ Filter::Filter(GeonkickWidget *parent)
         int x = width() / 2  - 3;
         int y = height() - 26;
         lpFilterButton = new GeonkickButton(this);
+        lpFilterButton->setCheckable(true);
         lpFilterButton->setBackgroundColor(background());
         lpFilterButton->setFixedSize(30, 16);
         lpFilterButton->setPosition(x,  y);
@@ -93,6 +94,7 @@ Filter::Filter(GeonkickWidget *parent)
                     setFilterType(GeonkickApi::FilterType::LowPass, b));
 
         bpFilterButton = new GeonkickButton(this);
+        bpFilterButton->setCheckable(true);
         bpFilterButton->setBackgroundColor(background());
         bpFilterButton->setFixedSize(30, 16);
         bpFilterButton->setPosition(lpFilterButton->x() + lpFilterButton->width() + 4,
@@ -103,6 +105,7 @@ Filter::Filter(GeonkickWidget *parent)
                     setFilterType(GeonkickApi::FilterType::BandPass, b));
 
         hpFilterButton = new GeonkickButton(this);
+        hpFilterButton->setCheckable(true);
         hpFilterButton->setBackgroundColor(background());
         hpFilterButton->setFixedSize(30, 16);
         hpFilterButton->setPosition(bpFilterButton->x() + bpFilterButton->width() + 4,

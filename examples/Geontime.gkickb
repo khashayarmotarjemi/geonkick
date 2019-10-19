@@ -1,0 +1,82 @@
+{
+    "name": "Geontime",
+    "author": "Geontime",
+    "authorUrl": "http://geontime.com",
+    "license": "CC-BY 4.0",
+    "presetGroups": [
+        {
+            "name": "Kicks",
+            "presets": [
+                {
+                   "name": "Kick-1_5_2",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Kick-1_5_2.gkick"
+                },
+                {
+                   "name": "Kick-1_5_1",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Kik-1_5_1.gkick"
+                }
+            ]
+        },
+        {
+            "name": "TimeKit",
+            "presets": [
+                {
+                   "name": "Kick",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/Kick.gkick"
+                },
+                {
+                   "name": "Snare",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/Snare.gkick"
+                },
+                {
+                   "name": "SnareT",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/SnareT.gkick"
+                },
+                {
+                   "name": "Hit-Hat",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/Hit-Hat.gkick"
+                },
+                {
+                   "name": "Hit-Hat-Open",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/Hit-Hat-Open.gkick"
+                },
+                {
+                   "name": "Hit-Hat-Closed",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/Hit-Hat-Closed.gkick"
+                },
+                {
+                   "name": "Clap",
+                   "author": "Geontime",
+                   "authorUrl": "http://geontime.com",
+                   "license": "CC-BY 4.0",
+                   "file": "Time Kit-1.0/Clap.gkick"
+                }
+            ]
+        }
+
+    ]
+}

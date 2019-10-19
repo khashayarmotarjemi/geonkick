@@ -52,6 +52,7 @@ MainWindow::MainWindow(RkMain *app, GeonkickApi *api, std::string preset)
         setFixedSize(940, 760);
         setTitle(GEOKICK_APP_NAME);
         geonkickApi->registerCallbacks(true);
+        RK_ACT_BIND(geonkickApi, stateChanged, RK_ACT_ARGS(), this, updateGui());
         show();
 }
 
@@ -184,29 +185,12 @@ void MainWindow::openPreset(const std::string &fileName)
                 return;
         }
 
-        std::filesystem::path filePath(fileName);
-        if (filePath.extension().empty()
-            || (filePath.extension() != ".gkick"
-            && filePath.extension() != ".GKICK")) {
-                RK_LOG_ERROR("Open Preset: " << "Can't open preset. Wrong file format.");
-                return;
+        if (geonkickApi->setPreset(fileName)) {
+                auto filePath = std::filesystem::path(fileName);
+                topBar->setPresetName(filePath.stem());
+                geonkickApi->setCurrentWorkingPath("OpenPreset",
+                                                   filePath.has_parent_path() ? filePath.parent_path() : filePath);
         }
-
-        std::ifstream file;
-        file.open(std::filesystem::absolute(filePath));
-        if (!file.is_open()) {
-                RK_LOG_ERROR("Open Preset" + std::string(" - ") + std::string(GEOKICK_APP_NAME) << ". Can't open preset.");
-                return;
-        }
-
-        std::string fileData((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
-        auto state = std::make_shared<GeonkickState>();
-        state->loadData(fileData);
-        geonkickApi->setState(state);
-        topBar->setPresetName(filePath.stem());
-        file.close();
-        geonkickApi->setCurrentWorkingPath("OpenPreset", filePath.has_parent_path() ? filePath.parent_path() : filePath);
-        updateGui();
 }
 
 void MainWindow::openFileDialog(FileDialog::Type type)

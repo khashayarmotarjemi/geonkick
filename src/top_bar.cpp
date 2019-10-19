@@ -23,8 +23,11 @@
 
 #include "top_bar.h"
 #include "geonkick_button.h"
+#include "preset_browser_model.h"
+#include "preset_browser_view.h"
+#include "preset_navigator.h"
 
-#include "RkLabel.h"
+#include <RkLabel.h>
 
 extern const unsigned char rk_logo_png[];
 extern const unsigned char rk_open_active_png[];
@@ -50,6 +53,7 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         , layer2Button{nullptr}
         , layer3Button{nullptr}
         , geonkickApi{api}
+        , presetBrowserModel{nullptr}
         , tuneCheckbox{nullptr}
 {
         setFixedWidth(parent->width());
@@ -96,16 +100,13 @@ TopBar::TopBar(GeonkickWidget *parent, GeonkickApi *api)
         aboutButton->setCheckable(true);
         RK_ACT_BIND(aboutButton, toggled, RK_ACT_ARGS(bool b), this, openAbout());
 
-        presetNameLabel = new RkLabel(this);
-        presetNameLabel->setBackgroundColor(background());
-        presetNameLabel->setTextColor({210, 226, 226, 140});
-        auto font = presetNameLabel->font();
-        font.setSize(12);
-        presetNameLabel->setFont(font);
-        presetNameLabel->setSize(250, 30);
-        presetNameLabel->setPosition(aboutButton->x() + aboutButton->width() + 5,
-                                     (height() - presetNameLabel->height()) / 2);
-        presetNameLabel->show();
+        presetBrowserModel = std::make_unique<PresetBrowserModel>(geonkickApi, parent->eventQueue());
+        auto presetNavigator = new PresetNavigator(this, presetBrowserModel.get());
+        presetNavigator->setBackgroundColor({100, 100, 100});
+        presetNavigator->setTextColor({210, 226, 226, 140});
+        presetNavigator->setPosition(aboutButton->x() + aboutButton->width() + 10, aboutButton->y());
+        RK_ACT_BIND(presetNavigator, openPresetBrowser,
+                    RK_ACT_ARGS(), this, openPresetBrowser());
 
         createLyersButtons();
 
@@ -167,9 +168,9 @@ void TopBar::setPresetName(const std::string &name)
                 std::string preset = name;
                 preset.resize(15);
                 preset += "...";
-                presetNameLabel->setText(preset);
+                //                presetNameLabel->setText(preset);
         } else {
-                presetNameLabel->setText(name);
+                //                presetNameLabel->setText(name);
         }
 }
 
@@ -179,4 +180,9 @@ void TopBar::updateGui()
         layer2Button->setPressed(geonkickApi->isLayerEnabled(GeonkickApi::Layer::Layer2));
         layer3Button->setPressed(geonkickApi->isLayerEnabled(GeonkickApi::Layer::Layer3));
         tuneCheckbox->setPressed(geonkickApi->isAudioOutputTuned());
+}
+
+void TopBar::openPresetBrowser()
+{
+        new PresetBrowserView(this, presetBrowserModel.get());
 }
