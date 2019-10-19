@@ -4,8 +4,7 @@ if (NOT LV2_FOUND)
   message(FATAL_ERROR "can't find LV2 library")
 endif(NOT LV2_FOUND)
 
-set(GKICK_LV2_DIR ${CMAKE_CURRENT_SOURCE_DIR}/plugin/lv2)
-set(GKICK_LV2_SOURCES ${GKICK_LV2_DIR}/geonkick_lv2.cpp)
+set(GKICK_LV2_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/geonkick_lv2.cpp)
 
 add_library(geonkick_lv2 SHARED
   ${GKICK_COMMON_HEADERS}
