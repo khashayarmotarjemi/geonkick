@@ -24,9 +24,9 @@ set(GKICK_VST_SOURCES
   ${GKICK_VST_DIR}/GKickVstProcessor.cpp
   ${GKICK_VST_DIR}/GKickVstEditor.cpp)
 
-smtg_add_vst3plugin(geonkick_vst ${GKICK_VST_HEADERS} ${GKICK_VST_SOURCES})
-target_link_libraries(geonkick_vst PRIVATE geonkick_common)
-target_link_libraries(geonkick_vst PRIVATE base sdk redkite)
-target_sources(geonkick_vst PRIVATE ${GKICK_VST_DIR}/info.rc)
-add_dependencies(geonkick_vst geonkick_common)
+smtg_add_vst3plugin(geonkick_vst3 ${GKICK_VST_HEADERS} ${GKICK_VST_SOURCES})
+target_link_libraries(geonkick_vst3 PRIVATE geonkick_common)
+target_link_libraries(geonkick_vst3 PRIVATE base sdk redkite)
+target_sources(geonkick_vst3 PRIVATE ${GKICK_VST_DIR}/info.rc)
+add_dependencies(geonkick_vst3 geonkick_common)
 

@@ -25,7 +25,7 @@
 #include "GKickVstProcessor.h"
 #include "VstIds.h"
 
-#include "public.sdk/source/main/pluginfactoryvst3.h"
+#include "public.sdk/source/main/pluginfactory.h"
 #include "pluginterfaces/base/fplatform.h"
 
 #define gkickPluginName		"Geonkick"
@@ -35,9 +35,9 @@
 #else
 #define gkickFileDescription	gkickPluginName" Geonkick"
 #endif
-#define gkickCompanyName		"Quamplex"
-#define gkickCompanyWeb		"http://quamplex.com"
-#define gkickCompanyEmail		"mailto:iurie.nistor@quamplex.com"
+#define gkickCompanyName	"Geontime"
+#define gkickCompanyWeb		"http://geontime.com"
+#define gkickCompanyEmail	"mailto:iurie@geontime.com"
 #define gkickLegalCopyright	"Copyright (C) 2019 Iurie Nistor"
 #define gkickLegalTrademarks	"Licence GPLv3"
 
@@ -49,7 +49,7 @@ DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstProcessorUID),
            gkickPluginName,
            Vst::kDistributable,
            "Fx",
-           "2.0.0",
+           "1.10.0",
            kVstVersionString,
            GKickVstProcessor::createInstance)
 
@@ -59,7 +59,7 @@ DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstControllerUID),
            gkickPluginName "Controller",
            0,
            "",
-           "2.0.0",
+           "1.10.0",
            kVstVersionString,
            GKickVstController::createInstance)
 
@@ -67,12 +67,12 @@ END_FACTORY
 
 bool InitModule()
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         return true;
 }
 
 bool DeinitModule()
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         return true;
 }

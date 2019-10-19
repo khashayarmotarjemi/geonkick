@@ -916,12 +916,14 @@ int geonkick_is_module_enabed(struct geonkick *kick, enum GEONKICK_MODULE module
 
         switch (module)
         {
+#ifdef GEONKICK_AUDIO_JACK
         case GEONKICK_MODULE_JACK:
                 if (kick->audio != NULL && kick->audio->jack != NULL)
                         return 1;
                 else
                         return 0;
         break;
+#endif // GEONKICK_AUDIO_JACK
         default:
                 return 0;
         }

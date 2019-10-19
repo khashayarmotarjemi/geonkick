@@ -21,7 +21,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "GkickVstProcessor.h"
+#include "GKickVstProcessor.h"
 #include "VstIds.h"
 
 #include "base/source/fstreamer.h"
@@ -33,20 +33,18 @@ namespace Steinberg
 
 GKickVstProcessor::GKickVstProcessor()
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         setControllerClass(GKickVstControllerUID);
 }
 
 tresult PLUGIN_API GKickVstProcessor::initialize(FUnknown* context)
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         auto res = AudioEffect::initialize(context);
         if (res != kResultTrue)
                 return kResultFalse;
 
-        addAudioInput(STR16("AudioInputXX"), Vst::SpeakerArr::kStereo);
         addAudioOutput(STR16("AudioOutputXX"), Vst::SpeakerArr::kStereo);
-
         return kResultTrue;
 }
 
@@ -55,7 +53,7 @@ tresult PLUGIN_API GKickVstProcessor::setBusArrangements(Vst::SpeakerArrangement
                                                          Vst::SpeakerArrangement* outputs,
                                                          int32 numOuts)
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         if (numIns == 1 && numOuts == 1 && inputs[0] == outputs[0])
                 return AudioEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
         return kResultFalse;
@@ -63,13 +61,13 @@ tresult PLUGIN_API GKickVstProcessor::setBusArrangements(Vst::SpeakerArrangement
 
 tresult PLUGIN_API GKickVstProcessor::setupProcessing(Vst::ProcessSetup& setup)
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         return AudioEffect::setupProcessing(setup);
 }
 
 tresult PLUGIN_API GKickVstProcessor::setActive(TBool state)
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         return AudioEffect::setActive(state);
 }
 
@@ -80,7 +78,7 @@ tresult PLUGIN_API GKickVstProcessor::process(Vst::ProcessData& data)
 
 tresult PLUGIN_API GKickVstProcessor::setState(IBStream* state)
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         if (!state)
                 return kResultFalse;
         return kResultOk;
@@ -88,13 +86,13 @@ tresult PLUGIN_API GKickVstProcessor::setState(IBStream* state)
 
 tresult PLUGIN_API GKickVstProcessor::getState(IBStream* state)
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
 		return kResultOk;
 }
 
 FUnknown* GKickVstProcessor::createInstance(void*)
 {
-        RK_LOG_INFO("called");
+        GEONKICK_LOG_INFO("called");
         return static_cast<Vst::IAudioProcessor*>(new GKickVstProcessor());
 }
 

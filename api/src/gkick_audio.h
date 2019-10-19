@@ -27,11 +27,15 @@
 #include "geonkick_internal.h"
 
 struct audio_output;
+#ifdef GEONKICK_AUDIO_JACK
 struct gkick_jack;
+#endif // GEONKICK_AUDIO_JACK
 
 struct gkick_audio {
         struct gkick_audio_output *audio_output;
+#ifdef GEONKICK_AUDIO_JACK
         struct gkick_jack *jack;
+#endif // GEONKICK_AUDIO_JACK
 };
 
 enum geonkick_error
