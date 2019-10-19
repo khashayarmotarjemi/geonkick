@@ -25,13 +25,13 @@
 #define GEONKICK_PLUGIN_VST_PROCESSOR_H
 
 #include "globals.h"
-#include "public.sdk/source/vst/vstaudioeffect.h"
+#include "public.sdk/source/vst/vstsinglecomponenteffect.h"
 
 class GeonkickApi;
 
 namespace Steinberg
 {
-class GKickVstProcessor : public Vst::AudioEffect {
+class GKickVstProcessor : public Vst::SingleComponentEffect {
   public:
         GKickVstProcessor();
         tresult PLUGIN_API initialize(FUnknown* context) SMTG_OVERRIDE;

@@ -35,12 +35,13 @@ namespace Steinberg
 GKickVstProcessor::GKickVstProcessor()
         : geonkickApi{nullptr}
 {
-        setControllerClass(GKickVstControllerUID);
+        std::freopen("/home/iurie/redir.txt", "w", stdout);
+        //        setControllerClass(GKickVstControllerUID);
 }
 
 tresult PLUGIN_API GKickVstProcessor::initialize(FUnknown* context)
 {
-        auto res = Vst::AudioEffect::initialize(context);
+        auto res = Vst::SingleComponentEffect::initialize(context);
         if (res != kResultTrue)
                 return kResultFalse;
 
@@ -62,20 +63,20 @@ tresult PLUGIN_API GKickVstProcessor::setBusArrangements(Vst::SpeakerArrangement
 {
         GEONKICK_LOG_INFO("called");
         if (numIns == 0 && numOuts == 1)
-                return Vst::AudioEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
+                return Vst::SingleComponentEffect::setBusArrangements(inputs, numIns, outputs, numOuts);
         return kResultFalse;
 }
 
 tresult PLUGIN_API GKickVstProcessor::setupProcessing(Vst::ProcessSetup& setup)
 {
         GEONKICK_LOG_INFO("called");
-        return Vst::AudioEffect::setupProcessing(setup);
+        return Vst::SingleComponentEffect::setupProcessing(setup);
 }
 
 tresult PLUGIN_API GKickVstProcessor::setActive(TBool state)
 {
         GEONKICK_LOG_INFO("called");
-        return Vst::AudioEffect::setActive(state);
+        return Vst::SingleComponentEffect::setActive(state);
 }
 
 tresult PLUGIN_API GKickVstProcessor::process(Vst::ProcessData& data)
@@ -83,31 +84,36 @@ tresult PLUGIN_API GKickVstProcessor::process(Vst::ProcessData& data)
         if (data.numSamples > 0) {
                 //		SpeakerArrangement arr;
                 //		getBusArrangement(kOutput, 0, arr);
-		auto numChannels = 2;
                 auto events = data.inputEvents;
                 auto nEvents = events->getEventCount();
                 auto eventIndex = 0;
+                Vst::Event event;
+                auto res = events->getEvent(eventIndex, event);
                 for (decltype(data.numSamples) i = 0; i < data.numSamples; i++) {
-                        if (eventIndex < nEvents) {
-                                Vst::Event event;
-                                events->getEvent(eventIndex++, event);
-                                if (event.sampleOffset == i) {
-                                        switch (event.type) {
-                                        case Vst::Event::kNoteOnEvent:
-                                                geonkickApi->setKeyPressed(true,
-                                                                           event.noteOn.pitch,
-                                                                           event.noteOn.velocity);
-                                                break;
+                        if (res != kResultOk)
+                                res = events->getEvent(eventIndex, event);
+                        if (res == kResultOk && event.sampleOffset == i && eventIndex < nEvents) {
+                                switch (event.type) {
+                                case Vst::Event::kNoteOnEvent:
+                                        GEONKICK_LOG_INFO("Vst::Event::kNoteOnEvent");
+                                        geonkickApi->setKeyPressed(true,
+                                                                   event.noteOn.pitch,
+                                                                   127/*event.noteOn.velocity*/);
+                                        break;
 
-                                        case Vst::Event::kNoteOffEvent:
-                                                geonkickApi->setKeyPressed(false,
-                                                                           event.noteOff.pitch,
-                                                                           event.noteOff.velocity);
-                                                break;
-                                        default:
-                                                break;
-                                        }
+                                case Vst::Event::kNoteOffEvent:
+                                        GEONKICK_LOG_INFO("Vst::Event::kNoteOffEvent");
+                                        geonkickApi->setKeyPressed(false,
+                                                                   event.noteOff.pitch,
+                                                                   127/*event.noteOff.velocity*/);
+                                        break;
+                                default:
+                                        break;
                                 }
+
+                                eventIndex++;
+                                if (eventIndex < nEvents)
+                                        res = events->getEvent(eventIndex, event);
                         }
                         auto val = geonkickApi->getAudioFrame();
                         data.outputs[0].channelBuffers32[0][i] = val;

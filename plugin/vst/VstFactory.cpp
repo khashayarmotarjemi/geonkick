@@ -47,21 +47,21 @@ DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstProcessorUID),
            PClassInfo::kManyInstances,
            kVstAudioEffectClass,
            gkickPluginName,
-           Vst::kDistributable,
+           0/*Vst::kDistributable*/,
            Vst::PlugType::kInstrumentSynth,
            "1.10.0",
            kVstVersionString,
            GKickVstProcessor::createInstance)
 
-DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstControllerUID),
-           PClassInfo::kManyInstances,
-           kVstComponentControllerClass,
-           gkickPluginName "Controller",
-           0,
-           "",
-           "1.10.0",
-           kVstVersionString,
-           GKickVstController::createInstance)
+// DEF_CLASS2(INLINE_UID_FROM_FUID(GKickVstControllerUID),
+//            PClassInfo::kManyInstances,
+//            kVstComponentControllerClass,
+//            gkickPluginName "Controller",
+//            0,
+//            "",
+//            "1.10.0",
+//            kVstVersionString,
+//            GKickVstController::createInstance)
 
 END_FACTORY
 
