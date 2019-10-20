@@ -30,7 +30,7 @@
 
 using namespace Steinberg;
 
-class GKickVstController : public Vst::EditController {
+class GKickVstController : public Vst::EditControllerEx1 {
  public:
         static FUnknown* createInstance(void*);
         tresult PLUGIN_API initialize(FUnknown* context) SMTG_OVERRIDE;
